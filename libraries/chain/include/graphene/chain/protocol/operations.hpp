@@ -81,7 +81,7 @@ namespace graphene { namespace chain {
             committee_member_update_global_parameters_operation,
             vesting_balance_create_operation,
             vesting_balance_withdraw_operation,
-            worker_create_operation,
+            // worker_create_operation,
             custom_operation,
             assert_operation,
             balance_claim_operation,
@@ -98,11 +98,11 @@ namespace graphene { namespace chain {
 
    /**
     *  Appends required authorites to the result vector.  The authorities appended are not the
-    *  same as those returned by get_required_auth 
+    *  same as those returned by get_required_auth
     *
     *  @return a set of required authorities for @ref op
     */
-   void operation_get_required_authorities( const operation& op, 
+   void operation_get_required_authorities( const operation& op,
                                             flat_set<account_id_type>& active,
                                             flat_set<account_id_type>& owner,
                                             vector<authority>&  other );

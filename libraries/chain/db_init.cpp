@@ -165,7 +165,7 @@ void database::initialize_evaluators()
    register_evaluator<withdraw_permission_claim_evaluator>();
    register_evaluator<withdraw_permission_update_evaluator>();
    register_evaluator<withdraw_permission_delete_evaluator>();
-   register_evaluator<worker_create_evaluator>();
+   //register_evaluator<worker_create_evaluator>();
    register_evaluator<balance_claim_evaluator>();
    register_evaluator<transfer_to_blind_evaluator>();
    register_evaluator<transfer_from_blind_evaluator>();
@@ -633,6 +633,7 @@ void database::init_genesis(const genesis_state_type& genesis_state)
    });
 
    // Create initial workers
+   /*
    std::for_each(genesis_state.initial_worker_candidates.begin(), genesis_state.initial_worker_candidates.end(),
                   [&](const genesis_state_type::initial_worker_type& worker)
    {
@@ -646,6 +647,7 @@ void database::init_genesis(const genesis_state_type& genesis_state)
 
        apply_operation(genesis_eval_state, std::move(op));
    });
+   */
 
    // Set active witnesses
    modify(get_global_properties(), [&](global_property_object& p) {

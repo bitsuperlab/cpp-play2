@@ -554,6 +554,7 @@ BOOST_AUTO_TEST_CASE( global_settle_test )
 } FC_LOG_AND_RETHROW()
 }
 
+/*
 BOOST_AUTO_TEST_CASE( worker_create_test )
 { try {
    ACTOR(nathan);
@@ -743,11 +744,12 @@ BOOST_AUTO_TEST_CASE( refund_worker_test )
    BOOST_CHECK(!db.get(worker_id_type()).is_active(db.head_block_time()));
    BOOST_CHECK_EQUAL(worker_id_type()(db).worker.get<refund_worker_type>().total_burned.value, 2000);
 }FC_LOG_AND_RETHROW()}
+*/
 
 /**
  * Create a burn worker, vote it in, make sure funds are destroyed.
  */
-
+/*
 BOOST_AUTO_TEST_CASE( burn_worker_test )
 {try{
    ACTOR(nathan);
@@ -820,6 +822,7 @@ BOOST_AUTO_TEST_CASE( burn_worker_test )
    BOOST_CHECK_EQUAL(worker_id_type()(db).worker.get<burn_worker_type>().total_burned.value, 2000);
    BOOST_CHECK_EQUAL( get_balance(GRAPHENE_NULL_ACCOUNT, asset_id_type()), 2000 );
 }FC_LOG_AND_RETHROW()}
+*/
 
 BOOST_AUTO_TEST_CASE( force_settle_test )
 {
@@ -1213,6 +1216,7 @@ BOOST_AUTO_TEST_CASE(transfer_with_memo) {
    } FC_LOG_AND_RETHROW()
 }
 
+/*
 BOOST_AUTO_TEST_CASE(zero_second_vbo)
 {
    try
@@ -1320,16 +1324,16 @@ BOOST_AUTO_TEST_CASE(zero_second_vbo)
          generate_block();
          BOOST_CHECK( vbid(db).get_allowed_withdraw(db.head_block_time()) == asset(10000) );
 
-         /*
-         db.get_index_type< simple_index<budget_record_object> >().inspect_all_objects(
+
+         //db.get_index_type< simple_index<budget_record_object> >().inspect_all_objects(
             [&](const object& o)
             {
                ilog( "budget: ${brec}", ("brec", static_cast<const budget_record_object&>(o)) );
             });
-         */
       }
    } FC_LOG_AND_RETHROW()
 }
+*/
 
 // TODO:  Write linear VBO tests
 

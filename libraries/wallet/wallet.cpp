@@ -1536,7 +1536,7 @@ public:
       op.initializer = init;
 
       signed_transaction tx;
-      tx.operations.push_back( op );
+      //TODO: tx.operations.push_back( op );
       set_operation_fees( tx, _remote_db->get_global_properties().parameters.current_fees );
       tx.validate();
 
