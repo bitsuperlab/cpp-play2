@@ -53,31 +53,15 @@ void_result asset_create_evaluator::do_evaluate( const asset_create_operation& o
    auto asset_symbol_itr = asset_indx.find( op.symbol );
    FC_ASSERT( asset_symbol_itr == asset_indx.end() );
 
-   if( d.head_block_time() <= HARDFORK_409_TIME )
+   auto dotpos = op.symbol.rfind( '.' );
+   if( dotpos != std::string::npos )
    {
-      auto dotpos = op.symbol.find( '.' );
-      if( dotpos != std::string::npos )
-      {
-         auto prefix = op.symbol.substr( 0, dotpos );
-         auto asset_symbol_itr = asset_indx.find( op.symbol );
-         FC_ASSERT( asset_symbol_itr != asset_indx.end(), "Asset ${s} may only be created by issuer of ${p}, but ${p} has not been registered",
-                    ("s",op.symbol)("p",prefix) );
-         FC_ASSERT( asset_symbol_itr->issuer == op.issuer, "Asset ${s} may only be created by issuer of ${p}, ${i}",
-                    ("s",op.symbol)("p",prefix)("i", op.issuer(d).name) );
-      }
-   }
-   else
-   {
-      auto dotpos = op.symbol.rfind( '.' );
-      if( dotpos != std::string::npos )
-      {
-         auto prefix = op.symbol.substr( 0, dotpos );
-         auto asset_symbol_itr = asset_indx.find( prefix );
-         FC_ASSERT( asset_symbol_itr != asset_indx.end(), "Asset ${s} may only be created by issuer of ${p}, but ${p} has not been registered",
-                    ("s",op.symbol)("p",prefix) );
-         FC_ASSERT( asset_symbol_itr->issuer == op.issuer, "Asset ${s} may only be created by issuer of ${p}, ${i}",
-                    ("s",op.symbol)("p",prefix)("i", op.issuer(d).name) );
-      }
+      auto prefix = op.symbol.substr( 0, dotpos );
+      auto asset_symbol_itr = asset_indx.find( prefix );
+      FC_ASSERT( asset_symbol_itr != asset_indx.end(), "Asset ${s} may only be created by issuer of ${p}, but ${p} has not been registered",
+                 ("s",op.symbol)("p",prefix) );
+      FC_ASSERT( asset_symbol_itr->issuer == op.issuer, "Asset ${s} may only be created by issuer of ${p}, ${i}",
+                 ("s",op.symbol)("p",prefix)("i", op.issuer(d).name) );
    }
 
    core_fee_paid -= core_fee_paid.value/2;

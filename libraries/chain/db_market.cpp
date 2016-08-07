@@ -259,8 +259,8 @@ int database::match( const limit_order_object& bid, const limit_order_object& as
 }
 
 
-asset database::match( const call_order_object& call, 
-                       const force_settlement_object& settle, 
+asset database::match( const call_order_object& call,
+                       const force_settlement_object& settle,
                        const price& match_price,
                        asset max_settlement )
 { try {
@@ -277,8 +277,8 @@ asset database::match( const call_order_object& call,
 
    /**
     *  If the least collateralized call position lacks sufficient
-    *  collateral to cover at the match price then this indicates a black 
-    *  swan event according to the price feed, but only the market 
+    *  collateral to cover at the match price then this indicates a black
+    *  swan event according to the price feed, but only the market
     *  can trigger a black swan.  So now we must cancel the forced settlement
     *  object.
     */
@@ -430,7 +430,7 @@ bool database::check_call_orders(const asset_object& mia, bool enable_black_swan
 { try {
     if( !mia.is_market_issued() ) return false;
 
-    if( check_for_blackswan( mia, enable_black_swan ) ) 
+    if( check_for_blackswan( mia, enable_black_swan ) )
        return false;
 
     const asset_bitasset_data_object& bitasset = mia.bitasset_data(*this);
@@ -481,7 +481,7 @@ bool database::check_call_orders(const asset_object& mia, bool enable_black_swan
 
        // would be margin called, but there is no matching order #436
        bool feed_protected = ( bitasset.current_feed.settlement_price > ~call_itr->call_price );
-       if( feed_protected && (head_block_time() > HARDFORK_436_TIME) )
+       if( feed_protected )
           return margin_called;
 
        // would be margin called, but there is no matching order
@@ -490,7 +490,7 @@ bool database::check_call_orders(const asset_object& mia, bool enable_black_swan
 
        if( feed_protected )
        {
-          ilog( "Feed protected margin call executing (HARDFORK_436_TIME not here yet)" );
+          ilog( "Feed protected margin call executing" );
           idump( (*call_itr) );
           idump( (*limit_itr) );
        }
@@ -506,7 +506,7 @@ bool database::check_call_orders(const asset_object& mia, bool enable_black_swan
 
        if( usd_to_buy * match_price > call_itr->get_collateral() )
        {
-          elog( "black swan detected" ); 
+          elog( "black swan detected" );
           edump((enable_black_swan));
           FC_ASSERT( enable_black_swan );
           globally_settle_asset(mia, bitasset.current_feed.settlement_price );

@@ -30,7 +30,7 @@
 namespace graphene { namespace chain {
 void_result transfer_evaluator::do_evaluate( const transfer_operation& op )
 { try {
-   
+
    const database& d = db();
 
    const account_object& from_account    = op.from(d);
@@ -66,7 +66,7 @@ void_result transfer_evaluator::do_evaluate( const transfer_operation& op )
 
       bool insufficient_balance = d.get_balance( from_account, asset_type ).amount >= op.amount.amount;
       FC_ASSERT( insufficient_balance,
-                 "Insufficient Balance: ${balance}, unable to transfer '${total_transfer}' from account '${a}' to '${t}'", 
+                 "Insufficient Balance: ${balance}, unable to transfer '${total_transfer}' from account '${a}' to '${t}'",
                  ("a",from_account.name)("t",to_account.name)("total_transfer",d.to_pretty_string(op.amount))("balance",d.to_pretty_string(d.get_balance(from_account, asset_type))) );
 
       return void_result();
@@ -102,10 +102,6 @@ void_result override_transfer_evaluator::do_evaluate( const override_transfer_op
    FC_ASSERT( is_authorized_asset( d, to_account, asset_type ) );
    FC_ASSERT( is_authorized_asset( d, from_account, asset_type ) );
 
-   if( d.head_block_time() <= HARDFORK_419_TIME )
-   {
-      FC_ASSERT( is_authorized_asset( d, from_account, asset_type ) );
-   }
    // the above becomes no-op after hardfork because this check will then be performed in evaluator
 
    FC_ASSERT( d.get_balance( from_account, asset_type ).amount >= op.amount.amount,

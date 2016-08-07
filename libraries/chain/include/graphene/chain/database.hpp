@@ -304,7 +304,7 @@ namespace graphene { namespace chain {
           * to newly created VBID and return it.
           *
           * Otherwise, credit amount to ovbid.
-          * 
+          *
           * @return ID of newly created VBO, but only if VBO was created.
           */
          optional< vesting_balance_id_type > deposit_lazy_vesting(
@@ -443,11 +443,9 @@ namespace graphene { namespace chain {
 
          void initialize_budget_record( fc::time_point_sec now, budget_record& rec )const;
          void process_budget();
-         void pay_workers( share_type& budget );
          void perform_chain_maintenance(const signed_block& next_block, const global_property_object& global_props);
          void update_active_witnesses();
          void update_active_committee_members();
-         void update_worker_votes();
 
          template<class... Types>
          void perform_account_maintenance(std::tuple<Types...> helpers);
