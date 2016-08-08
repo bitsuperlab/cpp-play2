@@ -359,7 +359,6 @@ BOOST_AUTO_TEST_CASE( cashback_test )
 
    int64_t reg_fee    = fees->get< account_create_operation >().premium_fee;
    int64_t xfer_fee   = fees->get< transfer_operation >().fee;
-   int64_t upg_an_fee = fees->get< account_upgrade_operation >().membership_annual_fee;
    int64_t upg_lt_fee = fees->get< account_upgrade_operation >().membership_lifetime_fee;
    // all percentages here are cut from whole pie!
    uint64_t network_pct = 20 * P1;
@@ -375,8 +374,8 @@ BOOST_AUTO_TEST_CASE( cashback_test )
       alife.vcb += xfer_fee; alife.bal += -xfer_fee -aann.b0; aann.bal += aann.b0;
       CustomAudit();
 
-      upgrade_to_annual_member(ann_id);
-      aann.ucb += upg_an_fee; aann.bal += -upg_an_fee;
+      upgrade_to_lifetime_member(ann_id);
+      aann.ucb += upg_lt_fee; aann.bal += -upg_lt_fee;
 
       // audit distribution of fees from Ann
       alife.ubal += pct( P100-network_pct, aann.ucb );

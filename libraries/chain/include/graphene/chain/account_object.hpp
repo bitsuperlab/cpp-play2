@@ -130,7 +130,7 @@ namespace graphene { namespace chain {
           * If set to time_point_sec::maximum(), the account is a lifetime member.
           * If set to any time not in the past less than time_point_sec::maximum(), the account is an annual member.
           *
-          * See @ref is_lifetime_member, @ref is_basic_account, @ref is_annual_member, and @ref is_member
+          * See @ref is_lifetime_member, @ref is_basic_account, and @ref is_member
           */
          time_point_sec membership_expiration_date;
 
@@ -247,12 +247,7 @@ namespace graphene { namespace chain {
          {
             return now > membership_expiration_date;
          }
-         /// @return true if the account is an unexpired annual member; false otherwise.
-         /// @note This method will return false for lifetime members.
-         bool is_annual_member(time_point_sec now)const
-         {
-            return !is_lifetime_member() && !is_basic_account(now);
-         }
+
          /// @return true if the account is an annual or lifetime member; false otherwise.
          bool is_member(time_point_sec now)const
          {
@@ -391,4 +386,3 @@ FC_REFLECT_DERIVED( graphene::chain::account_statistics_object,
                     (lifetime_fees_paid)
                     (pending_fees)(pending_vested_fees)
                   )
-

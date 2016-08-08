@@ -218,8 +218,7 @@ namespace graphene { namespace chain {
     */
    struct account_upgrade_operation : public base_operation
    {
-      struct fee_parameters_type { 
-         uint64_t membership_annual_fee   =  2000 * GRAPHENE_BLOCKCHAIN_PRECISION;
+      struct fee_parameters_type {
          uint64_t membership_lifetime_fee = 10000 * GRAPHENE_BLOCKCHAIN_PRECISION; ///< the cost to upgrade to a lifetime member
       };
 
@@ -288,7 +287,7 @@ FC_REFLECT( graphene::chain::account_whitelist_operation, (fee)(authorizing_acco
 FC_REFLECT( graphene::chain::account_create_operation::fee_parameters_type, (basic_fee)(premium_fee)(price_per_kbyte) )
 FC_REFLECT( graphene::chain::account_whitelist_operation::fee_parameters_type, (fee) )
 FC_REFLECT( graphene::chain::account_update_operation::fee_parameters_type, (fee)(price_per_kbyte) )
-FC_REFLECT( graphene::chain::account_upgrade_operation::fee_parameters_type, (membership_annual_fee)(membership_lifetime_fee) )
+FC_REFLECT( graphene::chain::account_upgrade_operation::fee_parameters_type, (membership_lifetime_fee) )
 FC_REFLECT( graphene::chain::account_transfer_operation::fee_parameters_type, (fee) )
 
 FC_REFLECT( graphene::chain::account_transfer_operation, (fee)(account_id)(new_owner)(extensions) )

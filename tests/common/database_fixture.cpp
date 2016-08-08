@@ -910,25 +910,6 @@ void database_fixture::upgrade_to_lifetime_member( const account_object& account
    FC_CAPTURE_AND_RETHROW((account))
 }
 
-void database_fixture::upgrade_to_annual_member(account_id_type account)
-{
-   upgrade_to_annual_member(account(db));
-}
-
-void database_fixture::upgrade_to_annual_member(const account_object& account)
-{
-   try {
-      account_upgrade_operation op;
-      op.account_to_upgrade = account.get_id();
-      op.fee = db.get_global_properties().parameters.current_fees->calculate_fee(op);
-      trx.operations = {op};
-      db.push_transaction(trx, ~0);
-      FC_ASSERT( op.account_to_upgrade(db).is_member(db.head_block_time()) );
-      trx.clear();
-      verify_asset_supplies(db);
-   } FC_CAPTURE_AND_RETHROW((account))
-}
-
 void database_fixture::print_market( const string& syma, const string& symb )const
 {
    const auto& limit_idx = db.get_index_type<limit_order_index>();
