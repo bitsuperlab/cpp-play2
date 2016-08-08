@@ -195,8 +195,6 @@ bool database::apply_order(const limit_order_object& new_order_object, bool allo
    const limit_order_object* updated_order_object = find< limit_order_object >( order_id );
    if( updated_order_object == nullptr )
       return true;
-   if( head_block_time() <= HARDFORK_555_TIME )
-      return false;
    // before #555 we would have done maybe_cull_small_order() logic as a result of fill_order() being called by match() above
    // however after #555 we need to get rid of small orders -- #555 hardfork defers logic that was done too eagerly before, and
    // this is the point it's deferred to.
@@ -294,8 +292,6 @@ asset database::match( const call_order_object& call,
 
 bool database::fill_order( const limit_order_object& order, const asset& pays, const asset& receives, bool cull_if_small )
 { try {
-   cull_if_small |= (head_block_time() < HARDFORK_555_TIME);
-
    FC_ASSERT( order.amount_for_sale().asset_id == pays.asset_id );
    FC_ASSERT( pays.asset_id != receives.asset_id );
 

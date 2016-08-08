@@ -951,9 +951,6 @@ BOOST_AUTO_TEST_CASE( top_n_special )
 {
    ACTORS( (alice)(bob)(chloe)(dan)(izzy)(stan) );
 
-   generate_blocks( HARDFORK_516_TIME );
-   generate_blocks( HARDFORK_599_TIME );
-
    try
    {
       {
@@ -1102,10 +1099,6 @@ BOOST_AUTO_TEST_CASE( buyback )
 {
    ACTORS( (alice)(bob)(chloe)(dan)(izzy)(philbin) );
    upgrade_to_lifetime_member(philbin_id);
-
-   generate_blocks( HARDFORK_538_TIME );
-   generate_blocks( HARDFORK_555_TIME );
-   generate_blocks( HARDFORK_599_TIME );
 
    try
    {

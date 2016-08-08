@@ -60,7 +60,7 @@ void database::update_global_dynamic_data( const signed_block& b )
          modify( witness_missed, [&]( witness_object& w ) {
            w.total_missed++;
          });
-      } 
+      }
    }
 
    // dynamic global properties updating
@@ -190,7 +190,7 @@ void database::clear_expired_proposals()
 
 /**
  *  let HB = the highest bid for the collateral  (aka who will pay the most DEBT for the least collateral)
- *  let SP = current median feed's Settlement Price 
+ *  let SP = current median feed's Settlement Price
  *  let LC = the least collateralized call order's swan price (debt/collateral)
  *
  *  If there is no valid price feed or no bids then there is no black swan.
@@ -236,7 +236,7 @@ bool database::check_for_blackswan( const asset_object& mia, bool enable_black_s
     }
 
     auto least_collateral = call_itr->collateralization();
-    if( ~least_collateral >= highest  ) 
+    if( ~least_collateral >= highest  )
     {
        elog( "Black Swan detected: \n"
              "   Least collateralized call: ${lc}  ${~lc}\n"
@@ -250,7 +250,7 @@ bool database::check_for_blackswan( const asset_object& mia, bool enable_black_s
        FC_ASSERT( enable_black_swan, "Black swan was detected during a margin update which is not allowed to trigger a blackswan" );
        globally_settle_asset(mia, ~least_collateral );
        return true;
-    } 
+    }
     return false;
 }
 
@@ -407,8 +407,8 @@ void database::clear_expired_orders()
             }
             try {
                settled += match(*itr, order, settlement_price, max_settlement);
-            } 
-            catch ( const black_swan_exception& e ) { 
+            }
+            catch ( const black_swan_exception& e ) {
                wlog( "black swan detected: ${e}", ("e", e.to_detail_string() ) );
                cancel_order( order );
                break;
@@ -436,10 +436,9 @@ void database::update_expired_feeds()
 
       const asset_bitasset_data_object& b = a.bitasset_data(*this);
       bool feed_is_expired;
-      if( head_block_time() < HARDFORK_615_TIME )
-         feed_is_expired = b.feed_is_expired_before_hardfork_615( head_block_time() );
-      else
-         feed_is_expired = b.feed_is_expired( head_block_time() );
+
+      feed_is_expired = b.feed_is_expired( head_block_time() );
+
       if( feed_is_expired )
       {
          modify(b, [this](asset_bitasset_data_object& a) {
