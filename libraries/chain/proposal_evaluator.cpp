@@ -33,6 +33,9 @@ namespace graphene { namespace chain {
 
 void_result proposal_create_evaluator::do_evaluate(const proposal_create_operation& o)
 { try {
+   // Disable Operation Temporary
+   FC_ASSERT( false, "Proposal create operation is not supported for now.");
+
    const database& d = db();
    const auto& global_parameters = d.get_global_properties().parameters;
 
@@ -51,7 +54,7 @@ void_result proposal_create_evaluator::do_evaluate(const proposal_create_operati
          operation_get_required_authorities(op.op, auths, auths, other);
       }
 
-      FC_ASSERT( other.size() == 0 ); // TODO: what about other??? 
+      FC_ASSERT( other.size() == 0 ); // TODO: what about other???
 
       if( auths.find(GRAPHENE_COMMITTEE_ACCOUNT) != auths.end() )
       {
@@ -92,7 +95,7 @@ object_id_type proposal_create_evaluator::do_apply(const proposal_create_operati
       //Populate the required approval sets
       flat_set<account_id_type> required_active;
       vector<authority> other;
-      
+
       // TODO: consider caching values from evaluate?
       for( auto& op : _proposed_trx.operations )
          operation_get_required_authorities(op, required_active, proposal.required_owner_approvals, other);

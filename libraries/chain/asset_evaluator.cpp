@@ -36,6 +36,8 @@ namespace graphene { namespace chain {
 
 void_result asset_create_evaluator::do_evaluate( const asset_create_operation& op )
 { try {
+   // Disable Operation Temporary
+   FC_ASSERT( false, "Asset create operation is not supported for now.");
 
    database& d = db();
 
@@ -130,6 +132,9 @@ object_id_type asset_create_evaluator::do_apply( const asset_create_operation& o
 
 void_result asset_issue_evaluator::do_evaluate( const asset_issue_operation& o )
 { try {
+   // Disable Operation Temporary
+   FC_ASSERT( false, "Asset issue operation is not supported for now.");
+
    const database& d = db();
 
    const asset_object& a = o.asset_to_issue.asset_id(d);
@@ -158,6 +163,9 @@ void_result asset_issue_evaluator::do_apply( const asset_issue_operation& o )
 
 void_result asset_reserve_evaluator::do_evaluate( const asset_reserve_operation& o )
 { try {
+   // Disable Operation Temporary
+   FC_ASSERT( false, "Asset reserve operation is not supported for now.");
+
    const database& d = db();
 
    const asset_object& a = o.amount_to_reserve.asset_id(d);

@@ -39,6 +39,9 @@
 namespace graphene { namespace chain {
 void_result limit_order_create_evaluator::do_evaluate(const limit_order_create_operation& op)
 { try {
+   // Disable Operation Temporary
+   FC_ASSERT( false, "Limit order create operation is not supported for now.");
+
    const database& d = db();
 
    FC_ASSERT( op.expiration >= d.head_block_time() );
@@ -163,6 +166,7 @@ void_result call_order_update_evaluator::do_evaluate(const call_order_update_ope
 
 void_result call_order_update_evaluator::do_apply(const call_order_update_operation& o)
 { try {
+   FC_ASSERT( false, "Call order update operation is not supported for now.");
    database& d = db();
 
    if( o.delta_debt.amount != 0 )
