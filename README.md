@@ -11,8 +11,8 @@ For Ubuntu 14.04 LTS users, see this link first:
 
 and then proceed with:
 
-    git clone https://github.com/cryptonomex/graphene.git
-    cd graphene
+    git clone https://github.com/bitsuperlab/cpp-play2.git
+    cd cpp-play2
     git submodule update --init --recursive
     cmake -DCMAKE_BUILD_TYPE=Debug .
     make
