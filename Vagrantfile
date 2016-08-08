@@ -1,4 +1,4 @@
-# Configures Ubuntu 14.04 VM to be used with BitShares 2.0 (Graphene)
+# Configures Ubuntu 14.04 VM to be used with DAC PLAY 2.0 (Graphene)
 # Downloads and builds all necessary software to run witness node and web GUI
 # Use with Vagrant (http://docs.vagrantup.com/v2/getting-started/index.html)
 # or just execute the shell script below.
@@ -24,40 +24,46 @@ sudo apt-get install -yfV libssl-dev openssl build-essential python-dev autotool
 sudo apt-get install -yfV libbz2-dev automake doxygen cmake ncurses-dev libtool nodejs nodejs-legacy npm mc
 sudo apt-get -y autoremove
 
-[ ! -d "bts" ] && mkdir bts && cd bts
+path=`pwd -P`
+
+cd $path
+[ ! -d "pls2" ] && mkdir pls2 && cd pls2
 [ ! -d "tmp" ] && mkdir tmp
 [ ! -d "build" ] && mkdir build
 
+cd $path/pls2
 if [ ! -d "tmp/boost_1_57_0" ]; then
-    echo_msg "building boost.."
-    cd tmp/
-    wget -nv 'http://sourceforge.net/projects/boost/files/boost/1.57.0/boost_1_57_0.tar.bz2/download'
-    tar -xf download
-    cd boost_1_57_0/
-    ./bootstrap.sh --prefix=/usr/local/ > /dev/null
-    sudo ./b2 install > /dev/null
-    cd ~/bts
-fi 
-  
-if [ ! -d "graphene" ]; then
-  echo_msg "building bitshares graphene toolkit.."  
-  git clone https://github.com/cryptonomex/graphene.git
-  cd graphene
-  git submodule update --init --recursive
-  cmake .
-  make
-  cd ~/bts
+  echo_msg "building boost.."
+  cd tmp/
+  wget -c 'http://sourceforge.net/projects/boost/files/boost/1.57.0/boost_1_57_0.tar.bz2/download' -O boost_1_57_0.tar.bz2
+  tar xjf boost_1_57_0.tar.bz2
+  cd boost_1_57_0/
+  ./bootstrap.sh --prefix=/usr/local/ > /dev/null
+  sudo ./b2 install > /dev/null
 fi
 
-if [ ! -d "graphene-ui" ]; then
-  echo_msg "installing ui dependencies.."  
-  git clone https://github.com/cryptonomex/graphene-ui.git
-  cd graphene-ui/dl
+cd $path/pls2
+if [ ! -d "cpp-play2" ]; then
+  echo_msg "building cpp-play2 graphene toolkit.."
+  git clone https://github.com/bitsuperlab/cpp-play2
+  cd cpp-play2
+  git submodule update --init --recursive
+  cd $path/build
+  cmake $path/pls2/cpp-play2
+  make
+fi
+
+cd $path/pls2
+if [ ! -d "cpp-play2-ui" ]; then
+  echo_msg "installing ui dependencies.."
+  git clone https://github.com/bitsuperlab/cpp-play2-ui.git
+  git submodule update --init --recursive
+  cd cpp-play2-ui/dl
   npm install --silent
   cd ../web
   npm install --silent
   npm run-script build
-  cd ~/bts
+  cd ..
 fi
 
 # ------ shell script end ------
@@ -65,13 +71,16 @@ SCRIPT
 
 
 
-Dir["*.sh"].each {|s| File.open(s,"r"){|f| $script << f.read()} } # includes additional .sh files (plug-ins)
+Dir["vagrant_*.sh"].each {|s| File.open(s,"r"){|f| $script << f.read()} } # includes additional .sh files (plug-ins)
 
 Vagrant.configure(2) do |config|
 
   config.vm.box = 'ubuntu_trusty_x64'
   config.vm.provision 'shell', inline: $script, privileged: false
   config.ssh.username = 'vagrant'
+
+  # set default provider
+  config.vm.provider "virtualbox"
 
   # to use with Digital Ocean please install this plugin https://github.com/smdahlen/vagrant-digitalocean
   # note: due to bug in vagrant-digitalocean you need to run provision separetly:
