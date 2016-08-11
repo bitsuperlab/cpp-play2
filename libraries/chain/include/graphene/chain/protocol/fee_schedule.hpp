@@ -61,14 +61,14 @@ namespace graphene { namespace chain {
       const typename Operation::fee_parameters_type& get()const
       {
          auto itr = parameters.find( typename Operation::fee_parameters_type() );
-         FC_ASSERT( itr != parameters.end() );
+          FC_ASSERT( itr != parameters.end(), "Operation fee parameter not found: ${f} and ${p}", ("f", typename Operation::fee_parameters_type())("p", parameters) );
          return itr->template get<typename Operation::fee_parameters_type>();
       }
       template<typename Operation>
       typename Operation::fee_parameters_type& get()
       {
          auto itr = parameters.find( typename Operation::fee_parameters_type() );
-         FC_ASSERT( itr != parameters.end() );
+         FC_ASSERT( itr != parameters.end(), "Operation fee parameter not found: ${f} and ${p}", ("f", typename Operation::fee_parameters_type())("p", parameters) );
          return itr->template get<typename Operation::fee_parameters_type>();
       }
 
