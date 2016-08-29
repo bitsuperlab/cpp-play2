@@ -130,7 +130,7 @@
  * every second, the fraction of burned core asset which cycles is
  * GRAPHENE_CORE_ASSET_CYCLE_RATE / (1 << GRAPHENE_CORE_ASSET_CYCLE_RATE_BITS)
  */
-#define GRAPHENE_CORE_ASSET_CYCLE_RATE                        3550// two weeks, 17
+#define GRAPHENE_CORE_ASSET_CYCLE_RATE                        17//3550// two weeks, 17
 #define GRAPHENE_CORE_ASSET_CYCLE_RATE_BITS                   32
 
 #define GRAPHENE_DEFAULT_WITNESS_PAY_PER_BLOCK            (GRAPHENE_BLOCKCHAIN_PRECISION * int64_t( 0) )
