@@ -238,6 +238,8 @@ void database::initialize_budget_record( fc::time_point_sec now, budget_record& 
    //   be able to use the entire reserve
    budget_u128 += ((uint64_t(1) << GRAPHENE_CORE_ASSET_CYCLE_RATE_BITS) - 1);
    budget_u128 >>= GRAPHENE_CORE_ASSET_CYCLE_RATE_BITS;
+
+   FC_ASSERT( budget_u128 > 0, "For testing the budget_u128 is: ${s}", ("s",budget_u128) );
    share_type budget;
    if( budget_u128 < reserve.value )
       rec.total_budget = share_type(budget_u128.to_uint64());
