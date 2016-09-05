@@ -240,11 +240,15 @@ void database::initialize_budget_record( fc::time_point_sec now, budget_record& 
    budget_u128 >>= GRAPHENE_CORE_ASSET_CYCLE_RATE_BITS;
 
    FC_ASSERT( budget_u128 > 0, "For testing the budget_u128 is: ${s}", ("s",budget_u128) );
+   try
+   {
    share_type budget;
    if( budget_u128 < reserve.value )
       rec.total_budget = share_type(budget_u128.to_uint64());
    else
       rec.total_budget = reserve;
+    }
+    FC_CAPTURE_AND_RETHROW((budget_u128)(dt)(reserve.value))
 
    return;
 }
