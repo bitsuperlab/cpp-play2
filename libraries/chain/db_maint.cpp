@@ -230,7 +230,7 @@ void database::initialize_budget_record( fc::time_point_sec now, budget_record& 
    // at the BEGINNING of the maintenance interval.
    reserve += dpo.witness_budget;
 
-   fc::uint128_t budget_u128 = reserve.value;
+   fc::uint128_t budget_u128 = reserve.value < 0 ? 0 : reserve.value;
    budget_u128 *= uint64_t(dt);
    budget_u128 *= GRAPHENE_CORE_ASSET_CYCLE_RATE;
    //round up to the nearest satoshi -- this is necessary to ensure
@@ -239,7 +239,6 @@ void database::initialize_budget_record( fc::time_point_sec now, budget_record& 
    budget_u128 += ((uint64_t(1) << GRAPHENE_CORE_ASSET_CYCLE_RATE_BITS) - 1);
    budget_u128 >>= GRAPHENE_CORE_ASSET_CYCLE_RATE_BITS;
 
-   FC_ASSERT( budget_u128 > 0, "For testing the budget_u128 is: ${s}", ("s",budget_u128) );
    try
    {
    share_type budget;
@@ -247,8 +246,8 @@ void database::initialize_budget_record( fc::time_point_sec now, budget_record& 
       rec.total_budget = share_type(budget_u128.to_uint64());
    else
       rec.total_budget = reserve;
-    }
-    FC_CAPTURE_AND_RETHROW((budget_u128)(dt)(reserve.value))
+   }
+    FC_CAPTURE_AND_RETHROW((budget_u128)(dt)(reserve.value)(rec)(core_dd))
 
    return;
 }
