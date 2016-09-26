@@ -6,3 +6,6 @@
     path = libraries/fc
     url = https://github.com/cryptonomex/fc.git
     ignore = dirty
+[submodule "vendor"]
+	path = vendor
+	url = https://github.com/bitsuperlab/vendor/

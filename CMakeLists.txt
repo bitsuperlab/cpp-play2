@@ -151,6 +151,8 @@ if(ENABLE_COVERAGE_TESTING)
 endif()
 
 add_subdirectory( libraries )
+add_subdirectory( vendor/v8-fibjs/exlib )
+add_subdirectory( vendor/v8-fibjs/v8 )
 add_subdirectory( programs )
 add_subdirectory( tests )
 
