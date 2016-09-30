@@ -24,7 +24,7 @@
 #pragma once
 #include <graphene/chain/protocol/base.hpp>
 
-namespace graphene { namespace chain { 
+namespace graphene { namespace chain {
    /**
      * @defgroup proposed_transactions  The Graphene Transaction Proposal Protocol
      * @ingroup operations
@@ -68,8 +68,8 @@ namespace graphene { namespace chain {
     */
    struct proposal_create_operation : public base_operation
    {
-       struct fee_parameters_type { 
-          uint64_t fee            = 20 * GRAPHENE_BLOCKCHAIN_PRECISION; 
+       struct fee_parameters_type {
+          uint64_t fee            = 1 * GRAPHENE_BLOCKCHAIN_PRECISION;
           uint32_t price_per_kbyte = 10;
        };
 
@@ -117,8 +117,8 @@ namespace graphene { namespace chain {
     */
    struct proposal_update_operation : public base_operation
    {
-      struct fee_parameters_type { 
-         uint64_t fee            = 20 * GRAPHENE_BLOCKCHAIN_PRECISION; 
+      struct fee_parameters_type {
+         uint64_t fee            = 1 * GRAPHENE_BLOCKCHAIN_PRECISION;
          uint32_t price_per_kbyte = 10;
       };
 
@@ -166,7 +166,7 @@ namespace graphene { namespace chain {
       void       validate()const;
    };
    ///@}
-   
+
 }} // graphene::chain
 
 FC_REFLECT( graphene::chain::proposal_create_operation::fee_parameters_type, (fee)(price_per_kbyte) )
