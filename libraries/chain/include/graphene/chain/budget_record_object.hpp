@@ -40,6 +40,9 @@ struct budget_record
    // witness budget requested by the committee
    share_type requested_witness_budget = 0;
 
+   // blocks to maint in the next maintenance interval
+   share_type witness_pay_per_block = 0;
+
    // funds that can be released from reserve at maximum rate
    share_type total_budget = 0;
 
@@ -75,6 +78,7 @@ FC_REFLECT(
    (from_accumulated_fees)
    (from_unused_witness_budget)
    (requested_witness_budget)
+   (witness_pay_per_block)
    (total_budget)
    (witness_budget)
    (worker_budget)
