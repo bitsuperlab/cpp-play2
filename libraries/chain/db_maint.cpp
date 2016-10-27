@@ -292,7 +292,8 @@ void database::process_budget()
       witness_budget = available_funds;//std::min(witness_budget, available_funds);
       rec.witness_budget = witness_budget;
 
-      rec.witness_pay_per_block = witness_budget / blocks_to_maint;
+      share_type witness_pay_per_block = witness_budget / blocks_to_maint;
+      rec.witness_pay_per_block = witness_pay_per_block;
 
       available_funds -= witness_budget;
 
