@@ -146,7 +146,7 @@
 
 #define GRAPHENE_CURRENT_DB_VERSION                          "GPH2.5"
 
-#define GRAPHENE_IRREVERSIBLE_THRESHOLD                      (70 * GRAPHENE_1_PERCENT)
+#define GRAPHENE_IRREVERSIBLE_THRESHOLD                      (55 * GRAPHENE_1_PERCENT)
 
 /**
  *  Reserved Account IDs with special meaning
