@@ -931,13 +931,13 @@ public:
       // TODO:  process when pay_from_account is ID
 
       account_object registrar_account_object =
-            this->get_account( registrar_account );
+            get_account( registrar_account );
       FC_ASSERT( registrar_account_object.is_lifetime_member() );
 
       account_id_type registrar_account_id = registrar_account_object.id;
 
       account_object referrer_account_object =
-            this->get_account( referrer_account );
+            get_account( referrer_account );
       account_create_op.referrer = referrer_account_object.id;
       account_create_op.referrer_percent = uint16_t( referrer_percent * GRAPHENE_1_PERCENT );
 

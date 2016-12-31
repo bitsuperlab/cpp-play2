@@ -34,7 +34,7 @@ namespace graphene { namespace chain {
 void_result proposal_create_evaluator::do_evaluate(const proposal_create_operation& o)
 { try {
    // Disable Operation Temporary
-   FC_ASSERT( false, "Proposal create operation is not supported for now.");
+   // FC_ASSERT( false, "Proposal create operation is not supported for now.");
 
    const database& d = db();
    const auto& global_parameters = d.get_global_properties().parameters;

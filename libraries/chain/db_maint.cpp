@@ -289,8 +289,12 @@ void database::process_budget()
 
       share_type witness_budget = gpo.parameters.witness_pay_per_block.value * blocks_to_maint;
       rec.requested_witness_budget = witness_budget;
-      witness_budget = std::min(witness_budget, available_funds);
+      witness_budget = available_funds;//std::min(witness_budget, available_funds);
       rec.witness_budget = witness_budget;
+
+      share_type witness_pay_per_block = witness_budget / blocks_to_maint;
+      rec.witness_pay_per_block = witness_pay_per_block;
+
       available_funds -= witness_budget;
 
       /*
@@ -336,6 +340,7 @@ void database::process_budget()
          // available_funds, we replace it with witness_budget
          // instead of adding it.
          _dpo.witness_budget = witness_budget;
+         _dpo.witness_pay_per_block = witness_pay_per_block;
          _dpo.last_budget_time = now;
       });
 

@@ -130,7 +130,7 @@
  * every second, the fraction of burned core asset which cycles is
  * GRAPHENE_CORE_ASSET_CYCLE_RATE / (1 << GRAPHENE_CORE_ASSET_CYCLE_RATE_BITS)
  */
-#define GRAPHENE_CORE_ASSET_CYCLE_RATE                        3550 // two weeks, 17
+#define GRAPHENE_CORE_ASSET_CYCLE_RATE                        1775 // two weeks, 17
 #define GRAPHENE_CORE_ASSET_CYCLE_RATE_BITS                   32
 
 #define GRAPHENE_DEFAULT_WITNESS_PAY_PER_BLOCK            (GRAPHENE_BLOCKCHAIN_PRECISION * int64_t( 0) )
@@ -146,7 +146,7 @@
 
 #define GRAPHENE_CURRENT_DB_VERSION                          "GPH2.5"
 
-#define GRAPHENE_IRREVERSIBLE_THRESHOLD                      (70 * GRAPHENE_1_PERCENT)
+#define GRAPHENE_IRREVERSIBLE_THRESHOLD                      (55 * GRAPHENE_1_PERCENT)
 
 /**
  *  Reserved Account IDs with special meaning
