@@ -56,7 +56,7 @@ public:
    void_result do_evaluate( const game_play_operation& o);
    void_result do_apply( const game_play_operation& o);
 
-   const game_object* game;
+   const game_object* game_to_play;
 };
 
 } } // graphene::chain

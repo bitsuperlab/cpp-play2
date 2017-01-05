@@ -31,116 +31,72 @@
 
 namespace graphene { namespace chain {
 
-   bool is_valid_name( const string& s );
-   bool is_cheap_name( const string& n );
-
-   /// These are the fields which can be updated by the active authority.
-   struct account_options
-   {
-      /// The memo key is the key this account will typically use to encrypt/sign transaction memos and other non-
-      /// validated account activities. This field is here to prevent confusion if the active authority has zero or
-      /// multiple keys in it.
-      public_key_type  memo_key;
-      /// If this field is set to an account ID other than GRAPHENE_PROXY_TO_SELF_ACCOUNT,
-      /// then this account's votes will be ignored; its stake
-      /// will be counted as voting for the referenced account's selected votes instead.
-      account_id_type voting_account = GRAPHENE_PROXY_TO_SELF_ACCOUNT;
-
-      /// The number of active witnesses this account votes the blockchain should appoint
-      /// Must not exceed the actual number of witnesses voted for in @ref votes
-      uint16_t num_witness = 0;
-      /// The number of active committee members this account votes the blockchain should appoint
-      /// Must not exceed the actual number of committee members voted for in @ref votes
-      uint16_t num_committee = 0;
-      /// This is the list of vote IDs this account votes for. The weight of these votes is determined by this
-      /// account's balance of core asset.
-      flat_set<vote_id_type> votes;
-      extensions_type        extensions;
-
-      void validate()const;
-   };
-
-   /**
-    *  @ingroup operations
-    */
-    struct create_game_operation : public base_operation
+    /**
+     *  @ingroup operations
+     */
+    struct game_create_operation : public base_operation
     {
       ///Names are a more complete description and may contain any kind of characters or spaces.
       std::string      name;
 
-      /// Describes the asset and its purpose.
+      /// Describes the game and its purpose.
       std::string      description;
 
-      /// Other information relevant to this asset.
-      fc::variant      public_data;
-
-      /// Game only be issued by individuals that have registered a name.
-      account_id_type  owner_account_id;
+      /// Game only be issued by individuals that have be registered.
+      account_id_type  issuer;
 
       /// The url of the game's rule script
       std::string      script_code;
 
-      account_id_type fee_payer()const { return registrar; }
+      account_id_type fee_payer()const { return issuer; }
       void            validate()const;
       share_type      calculate_fee(const fee_parameters_type& )const;
 
       void get_required_active_authorities( flat_set<account_id_type>& a )const
       {
          // registrar should be required anyway as it is the fee_payer(), but we insert it here just to be sure
-         a.insert( registrar );
-         if( extensions.value.buyback_options.valid() )
-            a.insert( extensions.value.buyback_options->asset_to_buy_issuer );
+         a.insert( issuer );
       }
     };
 
     struct game_update_operation : public base_operation
     {
+      account_id_type  issuer;
 
-      game_id_type               game_id;
+      game_id_type     game_to_update;
 
       /// Describes the asset and its purpose.
-      std::string      description;
-
-      /// Other information relevant to this asset.
-      fc::variant      public_data;
+      std::string      new_description;
 
       /// The url of the game's rule script
-      std::string      script_code;
+      std::string      new_script_code;
 
-      account_id_type fee_payer()const { return registrar; }
+      /// If the asset is to be given a new issuer, specify his ID here.
+      optional<account_id_type>   new_issuer;
+
+      extensions_type             extensions;
+
+      account_id_type fee_payer()const { return issuer; }
       void            validate()const;
       share_type      calculate_fee(const fee_parameters_type& )const;
-
-      void get_required_active_authorities( flat_set<account_id_type>& a )const
-      {
-         // registrar should be required anyway as it is the fee_payer(), but we insert it here just to be sure
-         a.insert( registrar );
-         if( extensions.value.buyback_options.valid() )
-            a.insert( extensions.value.buyback_options->asset_to_buy_issuer );
-      }
     };
 
     struct game_play_operation : public base_operation
     {
+      account_id_type  player;
 
-      bts::game::game_input  input;
+      game_id_type     game_to_play;
 
-      account_id_type fee_payer()const { return registrar; }
+      fc::variant      input_data;
+
+      account_id_type fee_payer()const { return player; }
       void            validate()const;
       share_type      calculate_fee(const fee_parameters_type& )const;
-
-      void get_required_active_authorities( flat_set<account_id_type>& a )const
-      {
-         // registrar should be required anyway as it is the fee_payer(), but we insert it here just to be sure
-         a.insert( registrar );
-         if( extensions.value.buyback_options.valid() )
-            a.insert( extensions.value.buyback_options->asset_to_buy_issuer );
-      }
     };
 } } // graphene::chain
 
-FC_REFLECT( graphene::chain::create_game_operation, (name)(description)(public_data)(owner_account_id)(script_code) )
+FC_REFLECT( graphene::chain::game_create_operation, (name)(description)(issuer)(script_code) )
 
-FC_REFLECT( graphene::chain::game_update_operation, (game_id)(description)(public_data)(script_code) )
+FC_REFLECT( graphene::chain::game_update_operation, (issuer)(game_to_update)(new_description)(new_script_code)(new_issuer)(extensions) )
 
-FC_REFLECT( graphene::chain::game_play_operation, (input) )
+FC_REFLECT( graphene::chain::game_play_operation, (player)(game_to_play)(input_data) )

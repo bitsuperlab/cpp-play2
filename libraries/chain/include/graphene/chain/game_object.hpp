@@ -41,7 +41,7 @@ namespace graphene { namespace chain {
    {
       public:
          static const uint8_t space_id = implementation_ids;
-         static const uint8_t type_id  = impl_game_record_object_type;
+         static const uint8_t type_id  = impl_game_data_object_type;
 
          game_id_type                                     game_id;
          fc::variant                                      data;
@@ -49,44 +49,37 @@ namespace graphene { namespace chain {
          asset get_balance()const { return asset(balance, asset_type); }
    };
 
-   struct game_data_index
-    {
-        game_id_type        game_id;
-        data_id_type        data_id;
+   class game_status_object : public abstract_object<game_status_object>
+   {
+      public:
+         static const uint8_t space_id = implementation_ids;
+         static const uint8_t type_id  = impl_game_status_object_type;
 
-        friend bool operator < ( const game_data_index& a, const game_data_index& b )
-        {
-            return std::tie( a.game_id, a.data_id ) < std::tie( b.game_id, b.data_id );
-        }
+         game_id_type             game_id;
+         uint32_t                 block_number;
+         optional<fc::exception>  last_error;
+   };
 
-        friend bool operator == ( const game_data_index& a, const game_data_index& b )
-        {
-            return std::tie( a.game_id, a.data_id ) == std::tie( b.game_id, b.data_id );
-        }
-    };
+   class game_play_object : public abstract_object<game_play_object>
+   {
+      public:
+         static const uint8_t space_id = implementation_ids;
+         static const uint8_t type_id  = impl_game_play_object_type;
 
-
-    class game_status_object : public abstract_object<game_status_object>
-    {
-       public:
-          static const uint8_t space_id = implementation_ids;
-          static const uint8_t type_id  = impl_game_record_object_type;
-
-          game_id_type             game_id;
-          uint32_t                 block_number;
-          optional<fc::exception>  last_error;
-
-          asset get_balance()const { return asset(balance, asset_type); }
-    };
+         game_id_type             game_id;
+         fc::variant              input;
+         uint16_t                 ref_block_num;
+         transaction_id_type      ref_trx_id;
+   };
 
 
    /**
-    * @brief This class represents an account on the object graph
+    * @brief This class represents a game on the object graph
     * @ingroup object
     * @ingroup protocol
     *
-    * Accounts are the primary unit of authority on the graphene system. Users must have an account in order to use
-    * assets, trade in the markets, vote for committee_members, etc.
+    * Games are the primary unit of game script definition on the graphene system. Users must have an game before playing
+    * with it, etc.
     */
    class game_object : public graphene::db::abstract_object<game_object>
    {
@@ -94,54 +87,51 @@ namespace graphene { namespace chain {
          static const uint8_t space_id = protocol_ids;
          static const uint8_t type_id  = game_object_type;
 
-         enum
-         {
-             god_owner_id     =  0,
-             null_owner_id    = -1
-         };
-
-         game_record make_null()const;
-         bool is_null()const               { return owner_account_id == null_owner_id; };
-
-         game_id_type        id;
-         std::string         name;
-         std::string         description;
-         fc::variant         public_data;
-         account_id_type     owner_account_id;
-         std::string         script_code;
-         fc::time_point_sec  registration_date;
-         fc::time_point_sec  last_update;
-
-         /** reserved for future extensions */
-         vector<char>        reserved;
-
-         account_id_type get_id()const { return id; }
+         /// The game's name. This name must be unique among all game names on the graph. May not be empty.
+         string           name;
+         string           description;
+         account_id_type  issuer;
+         string           script_code;
    };
+
+
+   struct by_name{};
+
+   /**
+    * @ingroup object_index
+    */
+   typedef multi_index_container<
+      game_object,
+      indexed_by<
+         ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
+         ordered_unique< tag<by_name>, member<game_object, string, &game_object::name> >
+      >
+   > game_multi_index_type;
+
+   /**
+    * @ingroup object_index
+    */
+   typedef generic_index<game_object, game_multi_index_type> game_index;
 
 }}
 
-FC_REFLECT_DERIVED( graphene::chain::account_object,
+FC_REFLECT_DERIVED( graphene::chain::game_data_object,
                     (graphene::db::object),
-                    (membership_expiration_date)(registrar)(referrer)(lifetime_referrer)
-                    (network_fee_percentage)(lifetime_referrer_fee_percentage)(referrer_rewards_percentage)
-                    (name)(owner)(active)(options)(statistics)(whitelisting_accounts)(blacklisting_accounts)
-                    (whitelisted_accounts)(blacklisted_accounts)
-                    (cashback_vb)
-                    (owner_special_authority)(active_special_authority)
-                    (top_n_control_flags)
-                    (allowed_assets)
+                    (game_id)(data)
                     )
 
-FC_REFLECT_DERIVED( graphene::chain::account_balance_object,
+FC_REFLECT_DERIVED( graphene::chain::game_status_object,
                     (graphene::db::object),
-                    (owner)(asset_type)(balance) )
+                    (game_id)(block_number)(last_error)
+                    )
 
-FC_REFLECT_DERIVED( graphene::chain::account_statistics_object,
-                    (graphene::chain::object),
-                    (owner)
-                    (most_recent_op)
-                    (total_ops)
-                    (total_core_in_orders)
-                    (lifetime_fees_paid)
-                    (pending_fees)(pending_vested_fees)
-                  )
+FC_REFLECT_DERIVED( graphene::chain::game_play_object,
+                    (graphene::db::object),
+                    (game_id)(input)(ref_block_num)(ref_trx_id)
+                    )
+
+FC_REFLECT_DERIVED( graphene::chain::game_object,
+                    (graphene::db::object),
+                    (name)(description)(issuer)
+                    (script_code)
+                    )
