@@ -45,8 +45,6 @@ namespace graphene { namespace chain {
 
          game_id_type                                     game_id;
          fc::variant                                      data;
-
-         asset get_balance()const { return asset(balance, asset_type); }
    };
 
    class game_status_object : public abstract_object<game_status_object>
@@ -95,7 +93,7 @@ namespace graphene { namespace chain {
    };
 
 
-   struct by_name{};
+   struct by_game_name{};
 
    /**
     * @ingroup object_index
@@ -104,7 +102,7 @@ namespace graphene { namespace chain {
       game_object,
       indexed_by<
          ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
-         ordered_unique< tag<by_name>, member<game_object, string, &game_object::name> >
+         ordered_unique< tag<by_game_name>, member<game_object, string, &game_object::name> >
       >
    > game_multi_index_type;
 

@@ -133,6 +133,7 @@ namespace graphene { namespace chain {
       withdraw_permission_object_type,
       vesting_balance_object_type,
       balance_object_type,
+      game_object_type,
       OBJECT_TYPE_COUNT ///< Sentry value which contains the number of different object types
    };
 
@@ -154,7 +155,10 @@ namespace graphene { namespace chain {
       impl_budget_record_object_type,
       impl_special_authority_object_type,
       impl_buyback_object_type,
-      impl_fba_accumulator_object_type
+      impl_fba_accumulator_object_type,
+      impl_game_data_object_type,
+      impl_game_status_object_type,
+      impl_game_play_object_type
    };
 
    //typedef fc::unsigned_int            object_id_type;
@@ -173,6 +177,7 @@ namespace graphene { namespace chain {
    class vesting_balance_object;
    class balance_object;
    class blinded_balance_object;
+   class game_object;
 
    typedef object_id< protocol_ids, account_object_type,            account_object>               account_id_type;
    typedef object_id< protocol_ids, asset_object_type,              asset_object>                 asset_id_type;
@@ -187,6 +192,7 @@ namespace graphene { namespace chain {
    typedef object_id< protocol_ids, withdraw_permission_object_type,withdraw_permission_object>   withdraw_permission_id_type;
    typedef object_id< protocol_ids, vesting_balance_object_type,    vesting_balance_object>       vesting_balance_id_type;
    typedef object_id< protocol_ids, balance_object_type,            balance_object>               balance_id_type;
+   typedef object_id< protocol_ids, game_object_type,               game_object>                  game_id_type;
 
    // implementation types
    class global_property_object;
@@ -204,6 +210,9 @@ namespace graphene { namespace chain {
    class special_authority_object;
    class buyback_object;
    class fba_accumulator_object;
+   class game_data_object;
+   class game_status_object;
+   class game_play_object;
 
    typedef object_id< implementation_ids, impl_global_property_object_type,  global_property_object>                    global_property_id_type;
    typedef object_id< implementation_ids, impl_dynamic_global_property_object_type,  dynamic_global_property_object>    dynamic_global_property_id_type;
@@ -224,6 +233,9 @@ namespace graphene { namespace chain {
    typedef object_id< implementation_ids, impl_special_authority_object_type, special_authority_object >                special_authority_id_type;
    typedef object_id< implementation_ids, impl_buyback_object_type, buyback_object >                                    buyback_id_type;
    typedef object_id< implementation_ids, impl_fba_accumulator_object_type, fba_accumulator_object >                    fba_accumulator_id_type;
+   typedef object_id< implementation_ids, impl_game_data_object_type, game_data_object >                                game_data_id_type;
+   typedef object_id< implementation_ids, impl_game_status_object_type, game_status_object >                            game_status_id_type;
+   typedef object_id< implementation_ids, impl_game_play_object_type, game_play_object >                                game_play_id_type;
 
    typedef fc::array<char, GRAPHENE_MAX_ASSET_SYMBOL_LENGTH>    symbol_type;
    typedef fc::ripemd160                                        block_id_type;

@@ -148,20 +148,3 @@ void game_plugin::plugin_shutdown()
    return;
 }
 
-void game_plugin::schedule_production_loop()
-{
-   //Schedule for the next second's tick regardless of chain state
-   // If we would wait less than 50ms, wait for the whole second.
-   fc::time_point ntp_now = graphene::time::now();
-   fc::time_point fc_now = fc::time_point::now();
-   int64_t time_to_next_second = 1000000 - (ntp_now.time_since_epoch().count() % 1000000);
-   if( time_to_next_second < 50000 )      // we must sleep for at least 50ms
-       time_to_next_second += 1000000;
-
-   fc::time_point next_wakeup( fc_now + fc::microseconds( time_to_next_second ) );
-
-   //wdump( (now.time_since_epoch().count())(next_wakeup.time_since_epoch().count()) );
-   _block_production_task = fc::schedule([this]{block_production_loop();},
-                                         next_wakeup, "Witness Block Production");
-}
-
