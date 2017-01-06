@@ -55,7 +55,7 @@ namespace graphene { namespace chain {
  * - All letters are lowercase
  * - Length is between (inclusive) GRAPHENE_MIN_ACCOUNT_NAME_LENGTH and GRAPHENE_MAX_ACCOUNT_NAME_LENGTH
  */
-bool is_valid_name( const string& name )
+bool is_valid_game_name( const string& name )
 {
 #if GRAPHENE_MIN_ACCOUNT_NAME_LENGTH < 3
 #error This is_valid_name implementation implicitly enforces minimum name length of 3.
@@ -121,7 +121,7 @@ bool is_valid_name( const string& name )
     return true;
 }
 
-bool is_cheap_name( const string& n )
+bool is_cheap_game_name( const string& n )
 {
    bool v = false;
    for( auto c : n )
@@ -148,7 +148,7 @@ share_type game_create_operation::calculate_fee( const fee_parameters_type& k )c
 {
    auto core_fee_required = k.basic_fee;
 
-   if( !is_cheap_name(name) )
+   if( !is_cheap_game_name(name) )
       core_fee_required = k.premium_fee;
 
    // Authorities and vote lists can be arbitrarily large, so charge a data fee for big ones
@@ -162,14 +162,15 @@ share_type game_create_operation::calculate_fee( const fee_parameters_type& k )c
 void game_create_operation::validate()const
 {
    FC_ASSERT( fee.amount >= 0 );
-   FC_ASSERT( is_valid_name( name ) );
+   FC_ASSERT( is_valid_game_name( name ) );
 }
 
 share_type game_update_operation::calculate_fee( const fee_parameters_type& k )const
 {
    auto core_fee_required = k.fee;
-   if( new_options )
-      core_fee_required += calculate_data_fee( fc::raw::pack_size(*this), k.price_per_kbyte );
+   
+   core_fee_required += calculate_data_fee( fc::raw::pack_size(*this), k.price_per_kbyte );
+      
    return core_fee_required;
 }
 
@@ -185,7 +186,8 @@ void game_update_operation::validate()const
 share_type game_play_operation::calculate_fee(const fee_parameters_type& k) const
 {
    // TODO: call v8 codes to get game fee.
-   return k.fee + calculate_game_fee( fc::raw::pack_size(*this), k.price_per_kbyte );
+   return k.fee + calculate_data_fee( fc::raw::pack_size(*this), k.price_per_kbyte );
+   // TODO: To add game fee to the fee.
 }
 
 void game_play_operation::validate() const

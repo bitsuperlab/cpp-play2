@@ -680,6 +680,69 @@ class wallet_api
                                                        string registrar_account,
                                                        string referrer_account,
                                                        bool broadcast = false);
+    
+      /** Create a third party's game on the blockckain.
+       *
+       * This function is used to create a game owned by a third-party account with script code.
+       *
+       *
+       * @param name the name of the game, must be unique on the blockchain.  Shorter names
+       *             are more expensive to register; the rules are still in flux, but in general
+       *             names of more than 8 characters with at least one digit will be cheap.
+       * @param description the description of the game.
+       * @param issuer_account_name the name of the issuer who register and issue this game to blockchain.
+       * @param script_url the url of the script_code for downloading from internet.
+       * @param script_hash the hash of the script_code for checksum and safety.
+       * @param broadcast true to broadcast the transaction on the network
+       * @returns the signed transaction creating the game
+       */
+      signed_transaction create_game(string name,
+                                     string description,
+                                     string issuer_account_name,
+                                     string script_url,
+                                     string script_hash,
+                                     bool broadcast = false);
+   
+      /** Update a third party's game on the blockckain.
+       *
+       * This function is used to update a game owned by a third-party account with script code.
+       *
+       *
+       * @param name the name of the game, must be unique on the blockchain.  Shorter names
+       *             are more expensive to register; the rules are still in flux, but in general
+       *             names of more than 8 characters with at least one digit will be cheap.
+       * @param new_description the new description of the game.
+       * @param issuer_account_name the name of the issuer who register and issue this game to 
+       *                            blockchain and pay the updating fees.
+       * @param new_script_url the url of the new script_code for downloading from internet.
+       * @param new_script_hash the hash of the new script_code for checksum and safety.
+       * @param broadcast true to broadcast the transaction on the network
+       * @returns the signed transaction creating the game
+       */
+      signed_transaction update_game(string name,
+                                     string new_description,
+                                     string issuer_account_name,
+                                     string new_script_url,
+                                     string new_script_hash,
+                                     bool broadcast = false);
+   
+   
+      /** Play a third party's game on the blockckain.
+       *
+       * This function is used to play a game owned by a third-party account with script code.
+       *
+       *
+       * @param name the name of the game.
+       * @param new_description the new description of the game.
+       * @param player_account_name the name of the player who play game and pay the fees.
+       * @param input the input data sent to the game for this play action.
+       * @param broadcast true to broadcast the transaction on the network
+       * @returns the signed transaction playing the game
+       */
+      signed_transaction play_game(string name,
+                                   string player_account_name,
+                                   const variant_object& input,
+                                   bool broadcast = false);
 
       /** Transfer an amount from one account to another.
        * @param from the name or id of the account sending the funds

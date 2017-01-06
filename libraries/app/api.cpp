@@ -35,6 +35,7 @@
 #include <graphene/chain/market_object.hpp>
 #include <graphene/chain/transaction_object.hpp>
 #include <graphene/chain/withdraw_permission_object.hpp>
+#include <graphene/chain/game_object.hpp>
 
 #include <fc/crypto/hex.hpp>
 #include <fc/smart_ref_impl.hpp>
@@ -298,6 +299,11 @@ namespace graphene { namespace app {
             } case balance_object_type:{
                /** these are free from any accounts */
                break;
+            } case game_object_type:{
+               const auto& aobj = dynamic_cast<const game_object*>(obj);
+               assert( aobj != nullptr );
+               result.push_back( aobj->issuer );
+               break;
             }
           }
        }
@@ -355,6 +361,12 @@ namespace graphene { namespace app {
                  case impl_buyback_object_type:
                   break;
                  case impl_fba_accumulator_object_type:
+                  break;
+                 case impl_game_data_object_type:
+                  break;
+                 case impl_game_status_object_type:
+                  break;
+                 case impl_game_play_object_type:
                   break;
           }
        }

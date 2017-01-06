@@ -1122,6 +1122,58 @@ public:
       fc::ecc::private_key owner_privkey = derive_private_key( normalized_brain_key, 0 );
       return create_account_with_private_key(owner_privkey, account_name, registrar_account, referrer_account, broadcast, save_wallet);
    } FC_CAPTURE_AND_RETHROW( (account_name)(registrar_account)(referrer_account) ) }
+   
+   signed_transaction create_game(string name,
+                                  string description,
+                                  string issuer_account_name,
+                                  string script_url,
+                                  string script_hash,
+                                  bool broadcast = false)
+   { try {
+      FC_ASSERT( !self.is_locked() );
+      FC_ASSERT( is_valid_name(name) );
+      game_create_operation game_create_op;
+      
+      account_object issuer_account_object = get_account( issuer_account_name );
+      
+      account_id_type issuer_account_id = issuer_account_object.id;
+      
+      game_create_op.name = name;
+      game_create_op.description = description;
+      game_create_op.issuer = issuer_account_id;
+      
+      signed_transaction tx;
+      
+      tx.operations.push_back( game_create_op );
+      
+      auto current_fees = _remote_db->get_global_properties().parameters.current_fees;
+      set_operation_fees( tx, current_fees );
+      
+      vector<public_key_type> paying_keys = issuer_account_object.active.get_keys();
+      
+      auto dyn_props = get_dynamic_global_properties();
+      tx.set_reference_block( dyn_props.head_block_id );
+      tx.set_expiration( dyn_props.time + fc::seconds(30) );
+      tx.validate();
+      
+      for( public_key_type& key : paying_keys )
+      {
+         auto it = _keys.find(key);
+         if( it != _keys.end() )
+         {
+            fc::optional< fc::ecc::private_key > privkey = wif_to_key( it->second );
+            if( !privkey.valid() )
+            {
+               FC_ASSERT( false, "Malformed private key in _keys" );
+            }
+            tx.sign( *privkey, _chain_id );
+         }
+      }
+      
+      if( broadcast )
+         _remote_net_broadcast->broadcast_transaction( tx );
+      return tx;
+   } FC_CAPTURE_AND_RETHROW( (name)(description)(issuer_account_name)(script_url)(script_hash)(broadcast) ) }
 
 
    signed_transaction create_asset(string issuer,

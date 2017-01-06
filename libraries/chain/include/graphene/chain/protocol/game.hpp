@@ -23,11 +23,9 @@
  */
 #pragma once
 #include <graphene/chain/protocol/base.hpp>
-#include <graphene/chain/protocol/buyback.hpp>
 #include <graphene/chain/protocol/ext.hpp>
 #include <graphene/chain/protocol/special_authority.hpp>
 #include <graphene/chain/protocol/types.hpp>
-#include <graphene/chain/protocol/vote.hpp>
 
 namespace graphene { namespace chain {
 
@@ -36,6 +34,15 @@ namespace graphene { namespace chain {
      */
     struct game_create_operation : public base_operation
     {
+      struct fee_parameters_type
+      {
+         uint64_t basic_fee      = 500*GRAPHENE_BLOCKCHAIN_PRECISION; ///< the cost to register the cheapest non-free game
+         uint64_t premium_fee    = 20000*GRAPHENE_BLOCKCHAIN_PRECISION; ///< the cost to register the cheapest non-free game
+         uint32_t price_per_kbyte = GRAPHENE_BLOCKCHAIN_PRECISION;
+      };
+
+      asset            fee;
+
       ///Names are a more complete description and may contain any kind of characters or spaces.
       std::string      name;
 
@@ -61,6 +68,14 @@ namespace graphene { namespace chain {
 
     struct game_update_operation : public base_operation
     {
+      struct fee_parameters_type
+      {
+         uint64_t fee      = 20*GRAPHENE_BLOCKCHAIN_PRECISION;
+         uint32_t price_per_kbyte = GRAPHENE_BLOCKCHAIN_PRECISION;
+      };
+
+      asset            fee;
+
       account_id_type  issuer;
 
       game_id_type     game_to_update;
@@ -83,6 +98,14 @@ namespace graphene { namespace chain {
 
     struct game_play_operation : public base_operation
     {
+      struct fee_parameters_type
+      {
+        share_type fee             = 20 * GRAPHENE_BLOCKCHAIN_PRECISION;
+        uint32_t   price_per_kbyte = GRAPHENE_BLOCKCHAIN_PRECISION;
+      };
+
+      asset            fee;
+
       account_id_type  player;
 
       game_id_type     game_to_play;
@@ -95,8 +118,12 @@ namespace graphene { namespace chain {
     };
 } } // graphene::chain
 
-FC_REFLECT( graphene::chain::game_create_operation, (name)(description)(issuer)(script_code) )
+FC_REFLECT( graphene::chain::game_create_operation, (fee)(name)(description)(issuer)(script_code) )
 
-FC_REFLECT( graphene::chain::game_update_operation, (issuer)(game_to_update)(new_description)(new_script_code)(new_issuer)(extensions) )
+FC_REFLECT( graphene::chain::game_update_operation, (fee)(issuer)(game_to_update)(new_description)(new_script_code)(new_issuer)(extensions) )
 
-FC_REFLECT( graphene::chain::game_play_operation, (player)(game_to_play)(input_data) )
+FC_REFLECT( graphene::chain::game_play_operation, (fee)(player)(game_to_play)(input_data) )
+
+FC_REFLECT( graphene::chain::game_create_operation::fee_parameters_type, (basic_fee)(premium_fee)(price_per_kbyte) )
+FC_REFLECT( graphene::chain::game_update_operation::fee_parameters_type, (fee)(price_per_kbyte) )
+FC_REFLECT( graphene::chain::game_play_operation::fee_parameters_type, (fee)(price_per_kbyte) )

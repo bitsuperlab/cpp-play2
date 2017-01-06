@@ -201,6 +201,21 @@ struct get_impacted_account_visitor
    {
       _impacted.insert( op.account_id );
    }
+   
+   void operator()( const game_create_operation& op )
+   {
+      _impacted.insert( op.issuer );
+   }
+   
+   void operator()( const game_update_operation& op )
+   {
+      _impacted.insert( op.issuer );
+   }
+   
+   void operator()( const game_play_operation& op )
+   {
+      _impacted.insert( op.player );
+   }
 
 };
 

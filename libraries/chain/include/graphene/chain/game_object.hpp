@@ -79,7 +79,7 @@ namespace graphene { namespace chain {
     * Games are the primary unit of game script definition on the graphene system. Users must have an game before playing
     * with it, etc.
     */
-   class game_object : public graphene::db::abstract_object<game_object>
+   class game_object : public abstract_object<game_object>
    {
       public:
          static const uint8_t space_id = protocol_ids;

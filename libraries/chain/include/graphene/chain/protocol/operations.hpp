@@ -37,6 +37,7 @@
 #include <graphene/chain/protocol/vesting.hpp>
 #include <graphene/chain/protocol/withdraw_permission.hpp>
 #include <graphene/chain/protocol/witness.hpp>
+#include <graphene/chain/protocol/game.hpp>
 
 namespace graphene { namespace chain {
 
@@ -89,7 +90,10 @@ namespace graphene { namespace chain {
             transfer_from_blind_operation,
             asset_settle_cancel_operation,  // VIRTUAL
             asset_claim_fees_operation,
-            fba_distribute_operation        // VIRTUAL
+            fba_distribute_operation,        // VIRTUAL
+            game_create_operation,
+            game_update_operation,
+            game_play_operation
          > operation;
 
    /// @} // operations group
