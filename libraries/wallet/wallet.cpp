@@ -66,6 +66,7 @@
 #include <graphene/utilities/git_revision.hpp>
 #include <graphene/utilities/key_conversion.hpp>
 #include <graphene/utilities/words.hpp>
+#include <graphene/utilities/http_downloader.hpp>
 #include <graphene/wallet/wallet.hpp>
 #include <graphene/wallet/api_documentation.hpp>
 #include <graphene/wallet/reflect_util.hpp>
@@ -602,6 +603,34 @@ public:
    {
       return get_account(account_name_or_id).get_id();
    }
+   
+   game_object get_game(game_id_type id) const
+   {
+      auto rec = _remote_db->get_games({id}).front();
+      FC_ASSERT(rec);
+      return *rec;
+   }
+   
+   game_object get_game(string game_name_or_id) const
+   {
+      FC_ASSERT( game_name_or_id.size() > 0 );
+      
+      if( auto id = maybe_id<game_id_type>(game_name_or_id) )
+      {
+         // It's an ID
+         return get_game(*id);
+      } else {
+         // It's a name
+         auto rec = _remote_db->lookup_game_names({game_name_or_id}).front();
+         FC_ASSERT( rec && rec->name == game_name_or_id );
+         return *rec;
+      }
+   }
+   game_id_type get_game_id(string game_name_or_id) const
+   {
+      return get_game(game_name_or_id).get_id();
+   }
+   
    optional<asset_object> find_asset(asset_id_type id)const
    {
       auto rec = _remote_db->get_assets({id}).front();
@@ -1142,6 +1171,18 @@ public:
       game_create_op.description = description;
       game_create_op.issuer = issuer_account_id;
       
+      const std::shared_ptr<graphene::utilities::http_downloader> downloader_ptr = std::make_shared<graphene::utilities::http_downloader>();
+      string content = downloader_ptr->download(script_url);
+      
+      if(content.empty())
+      {
+         FC_THROW("Fail to download script from url: ${script_url}, hash: ${script_hash}", ("script_url", script_url)("script_hash", script_hash));
+      }
+      
+      // TODO: check the hash of the content, which should be the same with script_hash
+      
+      game_create_op.script_code = content;
+      
       signed_transaction tx;
       
       tx.operations.push_back( game_create_op );
@@ -1174,6 +1215,128 @@ public:
          _remote_net_broadcast->broadcast_transaction( tx );
       return tx;
    } FC_CAPTURE_AND_RETHROW( (name)(description)(issuer_account_name)(script_url)(script_hash)(broadcast) ) }
+   
+   signed_transaction update_game(string name,
+                                  string new_description,
+                                  string issuer_account_name,
+                                  string new_script_url,
+                                  string new_script_hash,
+                                  bool broadcast = false)
+   { try {
+      FC_ASSERT( !self.is_locked() );
+      FC_ASSERT( is_valid_name(name) );
+      game_update_operation game_update_op;
+      
+      game_object game_object_to_update = get_game(name);
+      
+      account_object issuer_account_object = get_account( issuer_account_name );
+      
+      account_id_type issuer_account_id = issuer_account_object.id;
+      
+      FC_ASSERT( game_object_to_update.issuer == issuer_account_id );
+      
+      game_update_op.game_to_update = game_object_to_update.id;
+      game_update_op.new_description = new_description;
+      game_update_op.issuer = issuer_account_id;
+      
+      // TODO: support update of new_issuer.
+      
+      const std::shared_ptr<graphene::utilities::http_downloader> downloader_ptr = std::make_shared<graphene::utilities::http_downloader>();
+      string content = downloader_ptr->download(new_script_url);
+      
+      if(content.empty())
+      {
+         FC_THROW("Fail to download script from url: ${script_url}, hash: ${script_hash}", ("script_url", new_script_url)("script_hash", new_script_hash));
+      }
+      
+      // TODO: check the hash of the content, which should be the same with new_script_hash
+      
+      game_update_op.new_script_code = content;
+      
+      signed_transaction tx;
+      
+      tx.operations.push_back( game_update_op );
+      
+      auto current_fees = _remote_db->get_global_properties().parameters.current_fees;
+      set_operation_fees( tx, current_fees );
+      
+      vector<public_key_type> paying_keys = issuer_account_object.active.get_keys();
+      
+      auto dyn_props = get_dynamic_global_properties();
+      tx.set_reference_block( dyn_props.head_block_id );
+      tx.set_expiration( dyn_props.time + fc::seconds(30) );
+      tx.validate();
+      
+      for( public_key_type& key : paying_keys )
+      {
+         auto it = _keys.find(key);
+         if( it != _keys.end() )
+         {
+            fc::optional< fc::ecc::private_key > privkey = wif_to_key( it->second );
+            if( !privkey.valid() )
+            {
+               FC_ASSERT( false, "Malformed private key in _keys" );
+            }
+            tx.sign( *privkey, _chain_id );
+         }
+      }
+      
+      if( broadcast )
+         _remote_net_broadcast->broadcast_transaction( tx );
+      return tx;
+   } FC_CAPTURE_AND_RETHROW( (name)(new_description)(issuer_account_name)(new_script_url)(new_script_hash)(broadcast) ) }
+   
+   signed_transaction play_game(string name,
+                                string player_account_name,
+                                const variant_object& input,
+                                bool broadcast = false)
+   { try {
+      FC_ASSERT( !self.is_locked() );
+
+      game_play_operation game_play_op;
+      
+      game_object game_object_to_play = get_game(name);
+      
+      account_object player_account_object = get_account( player_account_name );
+      
+      account_id_type player_account_id = player_account_object.id;
+      
+      game_play_op.player = player_account_id;
+      game_play_op.game_to_play = game_object_to_play.id;
+      game_play_op.input_data = input;
+      
+      signed_transaction tx;
+      
+      tx.operations.push_back( game_play_op );
+      
+      auto current_fees = _remote_db->get_global_properties().parameters.current_fees;
+      set_operation_fees( tx, current_fees );
+      
+      vector<public_key_type> paying_keys = player_account_object.active.get_keys();
+      
+      auto dyn_props = get_dynamic_global_properties();
+      tx.set_reference_block( dyn_props.head_block_id );
+      tx.set_expiration( dyn_props.time + fc::seconds(30) );
+      tx.validate();
+      
+      for( public_key_type& key : paying_keys )
+      {
+         auto it = _keys.find(key);
+         if( it != _keys.end() )
+         {
+            fc::optional< fc::ecc::private_key > privkey = wif_to_key( it->second );
+            if( !privkey.valid() )
+            {
+               FC_ASSERT( false, "Malformed private key in _keys" );
+            }
+            tx.sign( *privkey, _chain_id );
+         }
+      }
+      
+      if( broadcast )
+         _remote_net_broadcast->broadcast_transaction( tx );
+      return tx;
+   } FC_CAPTURE_AND_RETHROW( (name)(player_account_name)(input)(broadcast) ) }
 
 
    signed_transaction create_asset(string issuer,
@@ -3056,6 +3219,35 @@ signed_transaction wallet_api::create_account_with_brain_key(string brain_key, s
             referrer_account, broadcast
             );
 }
+
+signed_transaction wallet_api::create_game(string name,
+                                              string description,
+                                              string issuer_account_name,
+                                              string script_url,
+                                              string script_hash,
+                                              bool broadcast)
+{
+   return my->create_game( name, description, issuer_account_name, script_url, script_hash, broadcast );
+}
+
+signed_transaction wallet_api::update_game(string name,
+                                              string new_description,
+                                              string issuer_account_name,
+                                              string new_script_url,
+                                              string new_script_hash,
+                                              bool broadcast)
+{
+   return my->update_game( name, new_description, issuer_account_name, new_script_url, new_script_hash, broadcast );
+}
+   
+signed_transaction wallet_api::play_game(string name,
+                                            string player_account_name,
+                                            const variant_object& input,
+                                            bool broadcast)
+{
+   return my->play_game( name, player_account_name, input, broadcast );
+}
+   
 signed_transaction wallet_api::issue_asset(string to_account, string amount, string symbol,
                                            string memo, bool broadcast)
 {

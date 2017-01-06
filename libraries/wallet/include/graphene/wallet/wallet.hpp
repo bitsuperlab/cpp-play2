@@ -358,6 +358,13 @@ class wallet_api
        * @returns the public account data stored in the blockchain
        */
       account_object                    get_account(string account_name_or_id) const;
+   
+      /** Returns information about the given game.
+       *
+       * @param game_name_or_id the name or id of the game to provide information about
+       * @returns the public game data stored in the blockchain
+       */
+      account_object                    get_game(string game_name_or_id) const;
 
       /** Returns information about the given asset.
        * @param asset_name_or_id the symbol or id of the asset in question
@@ -1581,6 +1588,9 @@ FC_API( graphene::wallet::wallet_api,
         (register_account)
         (upgrade_account)
         (create_account_with_brain_key)
+        (create_game)
+        (update_game)
+        (play_game)
         (sell_asset)
         (sell)
         (buy)

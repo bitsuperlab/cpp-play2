@@ -39,6 +39,7 @@
 #include <graphene/chain/operation_history_object.hpp>
 #include <graphene/chain/proposal_object.hpp>
 #include <graphene/chain/witness_object.hpp>
+#include <graphene/chain/game_object.hpp>
 
 #include <graphene/market_history/market_history_plugin.hpp>
 
@@ -260,6 +261,48 @@ class database_api
        * @return Map of account names to corresponding IDs
        */
       map<string,account_id_type> lookup_accounts(const string& lower_bound_name, uint32_t limit)const;
+   
+      /**
+       * @brief Get the total number of accounts registered with the blockchain
+       */
+      uint64_t get_account_count()const;
+   
+      //////////////
+      // Games //
+      //////////////
+   
+      /**
+       * @brief Get a list of games by ID
+       * @param game_ids IDs of the games to retrieve
+       * @return The games corresponding to the provided IDs
+       *
+       * This function has semantics identical to @ref get_objects
+       */
+      vector<optional<game_object>> get_games(const vector<game_id_type>& game_ids)const;
+   
+      optional<game_object> get_game_by_name( string name )const;
+   
+      /**
+       * @brief Get a list of games by name
+       * @param game_names Names of the games to retrieve
+       * @return The games holding the provided names
+       *
+       * This function has semantics identical to @ref get_objects
+       */
+      vector<optional<game_object>> lookup_game_names(const vector<string>& game_names)const;
+   
+      /**
+       * @brief Get names and IDs for registered games
+       * @param lower_bound_name Lower bound of the first name to return
+       * @param limit Maximum number of results to return -- must not exceed 1000
+       * @return Map of game names to corresponding IDs
+       */
+      map<string,game_id_type> lookup_games(const string& lower_bound_name, uint32_t limit)const;
+   
+      /**
+       * @brief Get the total number of games registered with the blockchain
+       */
+      uint64_t get_game_count()const;
 
       //////////////
       // Balances //
@@ -283,10 +326,7 @@ class database_api
 
       vector<vesting_balance_object> get_vesting_balances( account_id_type account_id )const;
 
-      /**
-       * @brief Get the total number of accounts registered with the blockchain
-       */
-      uint64_t get_account_count()const;
+   
 
       ////////////
       // Assets //
@@ -591,6 +631,13 @@ FC_API(graphene::app::database_api,
    (lookup_account_names)
    (lookup_accounts)
    (get_account_count)
+       
+   // Games
+   (get_games)
+   (get_game_by_name)
+   (lookup_game_names)
+   (lookup_games)
+   (get_game_count)
 
    // Balances
    (get_account_balances)

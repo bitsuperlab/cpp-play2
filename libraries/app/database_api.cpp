@@ -84,6 +84,13 @@ class database_api_impl : public std::enable_shared_from_this<database_api_impl>
       vector<optional<account_object>> lookup_account_names(const vector<string>& account_names)const;
       map<string,account_id_type> lookup_accounts(const string& lower_bound_name, uint32_t limit)const;
       uint64_t get_account_count()const;
+   
+      // Games
+      vector<optional<game_object>> get_games(const vector<game_id_type>& game_ids)const;
+      optional<game_object> get_game_by_name( string name )const;
+      vector<optional<game_object>> lookup_game_names(const vector<string>& game_names)const;
+      map<string,game_id_type> lookup_games(const string& lower_bound_name, uint32_t limit)const;
+      uint64_t get_game_count()const;
 
       // Balances
       vector<asset> get_account_balances(account_id_type id, const flat_set<asset_id_type>& assets)const;
@@ -693,6 +700,98 @@ uint64_t database_api::get_account_count()const
 uint64_t database_api_impl::get_account_count()const
 {
    return _db.get_index_type<account_index>().indices().size();
+}
+   
+   
+//////////////////////////////////////////////////////////////////////
+//                                                                  //
+// Games                                                            //
+//                                                                  //
+//////////////////////////////////////////////////////////////////////
+   
+vector<optional<game_object>> database_api::get_games(const vector<game_id_type>& game_ids)const
+{
+   return my->get_games( game_ids );
+}
+   
+vector<optional<game_object>> database_api_impl::get_games(const vector<game_id_type>& game_ids)const
+{
+   vector<optional<game_object>> result; result.reserve(game_ids.size());
+   std::transform(game_ids.begin(), game_ids.end(), std::back_inserter(result),
+                  [this](game_id_type id) -> optional<game_object> {
+                     if(auto o = _db.find(id))
+                     {
+                        subscribe_to_item( id );
+                        return *o;
+                     }
+                     return {};
+                  });
+   return result;
+}
+   
+optional<game_object> database_api::get_game_by_name( string name )const
+{
+   return my->get_game_by_name( name );
+}
+   
+optional<game_object> database_api_impl::get_game_by_name( string name )const
+{
+   const auto& idx = _db.get_index_type<game_index>().indices().get<by_game_name>();
+   auto itr = idx.find(name);
+   if (itr != idx.end())
+      return *itr;
+   return optional<game_object>();
+}
+   
+vector<optional<game_object>> database_api::lookup_game_names(const vector<string>& game_names)const
+{
+   return my->lookup_game_names( game_names );
+}
+   
+vector<optional<game_object>> database_api_impl::lookup_game_names(const vector<string>& game_names)const
+{
+   const auto& games_by_name = _db.get_index_type<game_index>().indices().get<by_game_name>();
+   vector<optional<game_object> > result;
+   result.reserve(game_names.size());
+   std::transform(game_names.begin(), game_names.end(), std::back_inserter(result),
+                  [&games_by_name](const string& name) -> optional<game_object> {
+                     auto itr = games_by_name.find(name);
+                     return itr == games_by_name.end()? optional<game_object>() : *itr;
+                  });
+   return result;
+}
+   
+map<string,game_id_type> database_api::lookup_games(const string& lower_bound_name, uint32_t limit)const
+{
+   return my->lookup_games( lower_bound_name, limit );
+}
+   
+map<string,game_id_type> database_api_impl::lookup_games(const string& lower_bound_name, uint32_t limit)const
+{
+   FC_ASSERT( limit <= 1000 );
+   const auto& games_by_name = _db.get_index_type<game_index>().indices().get<by_game_name>();
+   map<string,game_id_type> result;
+      
+   for( auto itr = games_by_name.lower_bound(lower_bound_name);
+       limit-- && itr != games_by_name.end();
+       ++itr )
+   {
+      result.insert(make_pair(itr->name, itr->get_id()));
+      if( limit == 1 )
+         subscribe_to_item( itr->get_id() );
+   }
+      
+   return result;
+}
+   
+uint64_t database_api::get_game_count()const
+{
+   return my->get_game_count();
+}
+   
+uint64_t database_api_impl::get_game_count()const
+{
+   return _db.get_index_type<game_index>().indices().size();
 }
 
 //////////////////////////////////////////////////////////////////////

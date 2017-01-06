@@ -90,6 +90,8 @@ namespace graphene { namespace chain {
          string           description;
          account_id_type  issuer;
          string           script_code;
+
+         game_id_type get_id()const { return id; }
    };
 
 
