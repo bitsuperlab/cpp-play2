@@ -7,7 +7,7 @@
 
 #include <sstream>
 
-namespace bts { namespace game {
+namespace graphene { namespace game_plugin {
 
    using namespace v8;
 

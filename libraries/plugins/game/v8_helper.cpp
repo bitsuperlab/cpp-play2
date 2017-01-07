@@ -1,10 +1,10 @@
-#include <bts/blockchain/types.hpp>
+#include <graphene/chain/protocol/types.hpp>
 
-#include <bts/game/v8_helper.hpp>
+#include <graphene/game/v8_helper.hpp>
 
 #include <boost/format.hpp>
 
-namespace bts { namespace game {
+namespace graphene { namespace game_plugin {
     Local<Value> v8_helper::parseJson(Isolate* isolate, Handle<String> jsonString) {
         EscapableHandleScope handle_scope(isolate);
 
@@ -72,7 +72,7 @@ namespace bts { namespace game {
             if (array.IsEmpty())
                 args.GetReturnValue().Set(Handle<Array>());
 
-            auto trx_id = json_to_cpp<bts::blockchain::transaction_id_type>(args.GetIsolate(), args[0]);
+            auto trx_id = json_to_cpp<graphene::chain::transaction_id_type>(args.GetIsolate(), args[0]);
 
             // Fill out the values
             // the value converted to int32_t
@@ -98,7 +98,7 @@ namespace bts { namespace game {
 
             std::string public_key_str(v8_helper::ToCString(String::Utf8Value(args[0]->ToString(args.GetIsolate()))));
              ;
-            bts::blockchain::address addr( (bts::blockchain::public_key_type( public_key_str )) );
+            graphene::chain::address addr( (graphene::chain::public_key_type( public_key_str )) );
 
             args.GetReturnValue().Set( v8_helper::cpp_to_json( args.GetIsolate(), addr ) );
         } catch ( ... )

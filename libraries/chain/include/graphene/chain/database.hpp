@@ -199,6 +199,11 @@ namespace graphene { namespace chain {
           * pointer to the last value of every object that was removed.
           */
          fc::signal<void(const vector<const object*>&)>  removed_objects;
+       
+         /**
+          *  This signal is emitted after all block apply actions and do the game contract execution.
+          */
+         fc::signal<void(const signed_block&)>           on_game_execution;
 
          //////////////////// db_witness_schedule.cpp ////////////////////
 
