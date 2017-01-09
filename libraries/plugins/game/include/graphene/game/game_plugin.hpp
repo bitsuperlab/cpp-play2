@@ -25,6 +25,7 @@
 
 #include <graphene/app/plugin.hpp>
 #include <graphene/chain/database.hpp>
+#include <graphene/game/v8_game.hpp>
 
 #include <fc/thread/future.hpp>
 
@@ -52,6 +53,18 @@ public:
    virtual void plugin_initialize( const boost::program_options::variables_map& options ) override;
    virtual void plugin_startup() override;
    virtual void plugin_shutdown() override;
+
+   void* get_isolate(/*const std::string& game_name*/);
+
+   void execute( uint32_t block_num );
+
+   v8_game_engine_ptr get_v8_engine(const std::string& game_name);
+
+   bool reinstall_game_engine(const std::string& game_name);
+
+   const game_object& get_game( const string& name );
+
+   const asset_object& get_game_asset( const string& symbol );
 
    friend class detail::game_plugin_impl;
    std::unique_ptr<detail::game_plugin_impl> my;

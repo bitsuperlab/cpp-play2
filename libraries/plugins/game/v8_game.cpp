@@ -13,12 +13,12 @@ namespace graphene { namespace game_plugin {
 
       public:
          graphene::game_plugin::v8_game_engine*         self;
-         graphene::game_plugin::game_plugin*            _game_plugin;
+         graphene::game_plugin::game_plugin&            _game_plugin;
          std::string                                    _game_name;
          Isolate*                                       _isolate;
          v8::Persistent<Context>                        _context;
 
-         v8_game_engine_impl(v8_game_engine* self, graphene::game_plugin::game_plugin* plugin)
+         v8_game_engine_impl(v8_game_engine* self, graphene::game_plugin::game_plugin& plugin)
          : self(self), _game_plugin(plugin)
          {
              //_context.Reset();
@@ -28,14 +28,13 @@ namespace graphene { namespace game_plugin {
             _context.Reset();
          }
 
-          /*
          void init()
          {
             // Refer http://v8.googlecode.com/svn/trunk/samples/process.cc
             // Deprecated: fc::path script_path( _client->get_data_dir() / (_game_name + ".js") );
 
             //_isolate = v8::Isolate::GetCurrent();
-            _isolate = (Isolate*)_game_plugin->get_isolate();
+            _isolate = (Isolate*)_game_plugin.get_isolate();
 
             v8::Locker locker(_isolate);
             Isolate::Scope isolate_scope(_isolate);
@@ -53,12 +52,12 @@ namespace graphene { namespace game_plugin {
 
             //ilog("The game is ${s}", ("s", _game_name ));
 
-             auto ogame_rec = _game_plugin->database()->get_game_record( _game_name );
-             FC_ASSERT( ogame_rec.valid() );
+            auto game = _game_plugin.get_game(_game_name);
+             //FC_ASSERT( game.valid() );
 
-             v8::Handle<v8::String> source = v8::String::NewFromUtf8( GetIsolate(), ogame_rec->script_code.c_str() );
+             v8::Handle<v8::String> source = v8::String::NewFromUtf8( GetIsolate(), game.script_code.c_str() );
 
-             if (ogame_rec->script_code.empty()) {
+             if (game.script_code.empty()) {
                  //wlog("The souce is empty, error loading script code");
                  GetIsolate()->ThrowException( v8::String::NewFromUtf8(GetIsolate(), "Error loading file" ) );
                  String::Utf8Value error(try_catch.Exception());
@@ -87,29 +86,25 @@ namespace graphene { namespace game_plugin {
                 }
             }
          }
-           */
 
          Isolate* GetIsolate() { return _isolate; }
       };
    }
 
-    v8_game_engine::v8_game_engine(std::string game_name, graphene::game_plugin::game_plugin* client): my(new detail::v8_game_engine_impl(this, client))
+   v8_game_engine::v8_game_engine(std::string game_name, graphene::game_plugin::game_plugin& plugin): my(new detail::v8_game_engine_impl(this, plugin))
    {
       my->_game_name = game_name;
-      //my->init();
+      my->init();
 
-       /*
-      auto ogame_rec = my->_game_plugin->database()->get_game_record( game_name );
-      FC_ASSERT( ogame_rec.valid() );
+      auto game = my->_game_plugin.get_game( game_name );
+      //FC_ASSERT( game.valid() );
 
-      auto game_assets = my->_game_plugin->database()->get_assets_by_issuer( asset_record::game_issuer_id, ogame_rec->id);
+      auto game_asset = my->_game_plugin.get_game_asset( "DICE" );
 
-      global(ogame_rec->id, game_assets);
-        */
+      global(game.get_id(), game_asset);
    }
 
-    /*
-   bool v8_game_engine::global( game_id_type game_id, vector<asset_record> game_assets)
+   bool v8_game_engine::global( game_id_type game_id, asset_object game_asset)
    {
        auto isolate = my->GetIsolate();
        v8::Locker locker( isolate );
@@ -130,17 +125,17 @@ namespace graphene { namespace game_plugin {
        auto evaluate = play->ToObject()->Get( String::NewFromUtf8( my->GetIsolate(), "global") );
 
        if(!evaluate->IsFunction()) {
-           FC_CAPTURE_AND_THROW( failed_compile_script );
+           // FC_CAPTURE_AND_THROW( failed_compile_script );
        } else {
            evaluate_func = Handle<Function>::Cast(evaluate);
            argv[0] = v8_helper::cpp_to_json(isolate, game_id);
-           argv[1] = v8_helper::cpp_to_json( isolate, game_assets );
+           argv[1] = v8_helper::cpp_to_json( isolate, game_asset );
 
            Local<Value> result = evaluate_func->Call(context->Global(), 2, argv);
 
            if ( result.IsEmpty() )
            {
-               FC_CAPTURE_AND_THROW(failed_run_script, (v8_helper::ReportException(my->GetIsolate(), &try_catch)));
+               // FC_CAPTURE_AND_THROW(failed_run_script, (v8_helper::ReportException(my->GetIsolate(), &try_catch)));
            } else
            {
                variant v = v8_helper::json_to_cpp<variant>(isolate, result);
@@ -150,6 +145,7 @@ namespace graphene { namespace game_plugin {
        }
    }
 
+   /*
    void v8_game_engine::evaluate( transaction_evaluation_state& eval_state, game_id_type game_id, const variant& var)
    {
        auto isolate = my->GetIsolate();

@@ -111,6 +111,9 @@ namespace graphene { namespace chain {
    GRAPHENE_DECLARE_OP_BASE_EXCEPTIONS( account_update );
    GRAPHENE_DECLARE_OP_EVALUATE_EXCEPTION( max_auth_exceeded, account_update, 1, "Exceeds max authority fan-out" )
    GRAPHENE_DECLARE_OP_EVALUATE_EXCEPTION( auth_account_not_found, account_update, 2, "Auth account not found" )
+   
+   GRAPHENE_DECLARE_OP_BASE_EXCEPTIONS( game_play );
+   GRAPHENE_DECLARE_OP_EVALUATE_EXCEPTION( game_engine_not_found, game_play, 1, "Game engine note found" )
 
    //GRAPHENE_DECLARE_OP_BASE_EXCEPTIONS( account_whitelist );
    //GRAPHENE_DECLARE_OP_BASE_EXCEPTIONS( account_upgrade );

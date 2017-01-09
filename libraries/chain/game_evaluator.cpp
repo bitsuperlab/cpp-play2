@@ -91,7 +91,7 @@ void_result game_update_evaluator::do_evaluate( const game_update_operation& o )
    return void_result();
 } FC_CAPTURE_AND_RETHROW( (o) ) }
 
-void_result account_update_evaluator::do_apply( const account_update_operation& o )
+void_result game_update_evaluator::do_apply( const game_update_operation& o )
 { try {
    database& d = db();
 
