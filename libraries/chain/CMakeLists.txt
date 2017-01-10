@@ -75,6 +75,7 @@ add_library( graphene_chain
              vesting_balance_evaluator.cpp
              withdraw_permission_evaluator.cpp
              confidential_evaluator.cpp
+             game_evaluator.cpp
              special_authority.cpp
              buyback.cpp
 

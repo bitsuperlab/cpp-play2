@@ -44,7 +44,7 @@ public:
    void_result do_evaluate( const game_update_operation& o );
    void_result do_apply( const game_update_operation& o );
 
-   const game_object* game;
+   const game_object* game_to_update;
 };
 
 

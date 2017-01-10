@@ -114,6 +114,10 @@ namespace graphene { namespace chain {
    
    GRAPHENE_DECLARE_OP_BASE_EXCEPTIONS( game_play );
    GRAPHENE_DECLARE_OP_EVALUATE_EXCEPTION( game_engine_not_found, game_play, 1, "Game engine note found" )
+   GRAPHENE_DECLARE_OP_EVALUATE_EXCEPTION( failed_game_engine_init, game_play, 2, "Failed to init game engine" )
+   GRAPHENE_DECLARE_OP_EVALUATE_EXCEPTION( failed_load_source_file, game_play, 3, "Failed to load game source file" )
+   GRAPHENE_DECLARE_OP_EVALUATE_EXCEPTION( failed_compile_script, game_play, 4, "Failed to compile game script" )
+   GRAPHENE_DECLARE_OP_EVALUATE_EXCEPTION( failed_run_script, game_play, 5, "Failed to run game script" )
 
    //GRAPHENE_DECLARE_OP_BASE_EXCEPTIONS( account_whitelist );
    //GRAPHENE_DECLARE_OP_BASE_EXCEPTIONS( account_upgrade );

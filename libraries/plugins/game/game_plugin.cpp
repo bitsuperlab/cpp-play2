@@ -53,7 +53,7 @@ namespace graphene { namespace game_plugin {
         class game_plugin_impl
         {
         public:
-            game_plugin& _self;
+            game_plugin&            _self;
             v8::Platform*           _platform;
 
             // For each game we should create a different isolate instance,
@@ -62,11 +62,11 @@ namespace graphene { namespace game_plugin {
             // Here I just fixed the process hang issue.
             v8::Isolate* _isolate;
 
-            ArrayBufferAllocator*  _allocator;
+            ArrayBufferAllocator*   _allocator;
 
-            exlib::Service*        _service;
+            exlib::Service*         _service;
 
-            fc::path                _data_dir;
+            //fc::path                _data_dir;
 
             std::unordered_map<std::string, v8_game_engine_ptr > _engines;
 
@@ -85,77 +85,73 @@ namespace graphene { namespace game_plugin {
             game_plugin_impl(game_plugin& _plugin)
             : _self( _plugin )
             {
-              try {
-                v8::V8::InitializeICU();
-                exlib::Service::init();
+               try {
+                  v8::V8::InitializeICU();
+                  exlib::Service::init();
 
-                _platform = v8::platform::CreateDefaultPlatform();
-                v8::V8::InitializePlatform(_platform);
-                v8::V8::Initialize();
+                  _platform = v8::platform::CreateDefaultPlatform();
+                  v8::V8::InitializePlatform(_platform);
+                  v8::V8::Initialize();
 
 
-                _isolate = v8::Isolate::GetCurrent();
-                if ( _isolate == NULL )
-                {
+                  _isolate = v8::Isolate::GetCurrent();
+                  if ( _isolate == NULL )
+                  {
+                     /*
+                      ResourceConstraints rc;
+                      rc.set_max_old_space_size(10); //MB
+                      rc.set_max_executable_size(10); //MB
+
+                      params.constraints.set_stack_limit(reinterpret_cast<uint32_t*>((char*)&rc - 1024 * 512));
+                      https://github.com/v8/v8/blob/master/test/cctest/test-api.cc#L18724
+                      */
+                     _service = exlib::Service::current();
+                     _allocator = new ArrayBufferAllocator();
+                     Isolate::CreateParams create_params;
+                     create_params.array_buffer_allocator = _allocator;
+
+                     ResourceConstraints rc;
+                     rc.set_max_semi_space_size(40);
+                     rc.set_max_old_space_size(60); //MB
+                     rc.set_max_executable_size(60); //MB
+                     static const int stack_breathing_room = 1024 * 1024;
+                     //uint32_t* set_limit = ComputeStackLimit(stack_breathing_room);
+                     rc.set_stack_limit(reinterpret_cast<uint32_t*>((char*)&rc - stack_breathing_room));
+
+                     create_params.constraints = rc;
+
+                     _isolate = v8::Isolate::New(create_params);
+
+                     //_isolate->SetStackLimit(reinterpret_cast<uintptr_t>(set_limit));
+                     _isolate->Enter();
+                  }
+
+                  v8::V8::SetCaptureStackTraceForUncaughtExceptions(true, 10, StackTrace::kDetailed);
+
+                  ilog("Init class templat for game client" );
+
+                  v8_api::init_class_template( _isolate );
+                  // Refer: libraries/chain/include/graphene/chain/protocol/operations.hpp
+                  //bts::blockchain::operation_factory::instance().register_operation<game_create_operation>();
+                  //bts::blockchain::operation_factory::instance().register_operation<game_update_operation>();
+                  //bts::blockchain::operation_factory::instance().register_operation<game_play_operation>();
+
                   /*
-                  ResourceConstraints rc;
-                  rc.set_max_old_space_size(10); //MB
-                  rc.set_max_executable_size(10); //MB
-
-                  params.constraints.set_stack_limit(reinterpret_cast<uint32_t*>((char*)&rc - 1024 * 512));
-                  https://github.com/v8/v8/blob/master/test/cctest/test-api.cc#L18724
-                   */
-                  _service = exlib::Service::current();
-                  _allocator = new ArrayBufferAllocator();
-                  Isolate::CreateParams create_params;
-                  create_params.array_buffer_allocator = _allocator;
-
-                  ResourceConstraints rc;
-                  rc.set_max_semi_space_size(40);
-                  rc.set_max_old_space_size(60); //MB
-                  rc.set_max_executable_size(60); //MB
-                  static const int stack_breathing_room = 1024 * 1024;
-//uint32_t* set_limit = ComputeStackLimit(stack_breathing_room);
-                  rc.set_stack_limit(reinterpret_cast<uint32_t*>((char*)&rc - stack_breathing_room));
-
-                  create_params.constraints = rc;
-
-                  _isolate = v8::Isolate::New(create_params);
-
-                  //_isolate->SetStackLimit(reinterpret_cast<uintptr_t>(set_limit));
-                  _isolate->Enter();
-                }
-
-                v8::V8::SetCaptureStackTraceForUncaughtExceptions(true, 10, StackTrace::kDetailed);
-
-                ilog("Init class templat for game client" );
-
-                v8_api::init_class_template( _isolate );
-                // Refer: libraries/chain/include/graphene/chain/protocol/operations.hpp
-                //bts::blockchain::operation_factory::instance().register_operation<game_create_operation>();
-                //bts::blockchain::operation_factory::instance().register_operation<game_update_operation>();
-                //bts::blockchain::operation_factory::instance().register_operation<game_play_operation>();
-
-                /*
-                game_executors::instance().register_game_executor(
-                    std::function<void( chain_database_ptr, uint32_t, const pending_chain_state_ptr&)>(
-                    std::bind(&client::execute, self, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3 ) )
+                  game_executors::instance().register_game_executor(
+                     std::function<void( chain_database_ptr, uint32_t, const pending_chain_state_ptr&)>(
+                     std::bind(&client::execute, self, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3 ) )
                                                                 );
-                */
-                 /*
-                _http_callback_signal_connection =
-                self->game_claimed_script.connect(
+                  */
+                  /*
+                  _http_callback_signal_connection =
+                  self->game_claimed_script.connect(
                                                 [=]( std::string code, std::string name) { this->script_http_callback( code, name ); } );
-                 */
-                } catch (...) {
-                }
+                  */
+               } catch (...) {
+               }
             }
-            virtual ~game_plugin_impl();
 
-            /** this method is called as a callback after a block is applied
-             *  and the game contract will be executed.
-             */
-            void execute( const signed_block& b );
+            virtual ~game_plugin_impl();
 
             graphene::chain::database& database()
             {
@@ -175,10 +171,10 @@ namespace graphene { namespace game_plugin {
 
             void install_game_engine_if_not(const std::string& game_name)
             {
-              auto itr = _engines.find( game_name );
+               auto itr = _engines.find( game_name );
 
-              if( itr == _engines.end() )
-              {
+               if( itr == _engines.end() )
+               {
                   try
                   {
                       install_game_engine(game_name, std::make_shared< v8_game_engine > (game_name, _self));
@@ -186,11 +182,11 @@ namespace graphene { namespace game_plugin {
                   {
                       wlog("game engine register failed: ${x}", ("x",e.to_detail_string()));
                   }
-              }
+               }
             }
 
             // Debuging file from operation and save to data_dir
-           /*
+            /*
             void script_http_callback( const std::string code, std::string game_name )
             {
               ilog("Storing the game code in a directory for viewing: ${game_name}", ("game_name", game_name) );
@@ -213,7 +209,7 @@ namespace graphene { namespace game_plugin {
                       }
                       );
               }
-            */
+              */
         };
 
         game_plugin_impl::~game_plugin_impl()
@@ -277,7 +273,12 @@ void game_plugin::plugin_initialize(const boost::program_options::variables_map&
    ilog("game plugin:  plugin_initialize() begin");
    _options = &options;
 
-   database().on_game_execution.connect( [&]( const signed_block& b){ my->execute(b); } );
+   database().on_game_execution.connect( [&]( const signed_block& b){ execute(b.block_num()); } );
+   database().on_game_play.connect([&]( game_id_type game_id) { /* play(game_id); // get_v8_engine(game_id)->play(...)*/ } );
+
+   database().on_game_evaluate.connect([&]( game_id_type game_id) { /* evaluate(game_id); // get_v8_engine(game_id)->evalute(...)*/ } );
+
+   database().on_game_apply.connect([&]( game_id_type game_id) { /* apply(game_id); // get_v8_engine(game_id)->apply(...)*/ } );
 
    ilog("game plugin:  plugin_initialize() end");
 } FC_LOG_AND_RETHROW() }
@@ -325,7 +326,7 @@ void game_plugin::execute( uint32_t block_num )
       try {
           auto v8_game_engine = get_v8_engine( itr->name );
           wlog("Start execute the game ${g}", ("g", itr->name));
-          v8_game_engine->execute( itr->get_id(), block_num );
+          // v8_game_engine->execute( itr->get_id(), block_num );
       }
       catch (const game_play_game_engine_not_found& e)
       {
@@ -353,4 +354,9 @@ bool game_plugin::reinstall_game_engine(const std::string& game_name)
       get_v8_engine( game_name );
 
       return true;
+}
+
+void* game_plugin::get_isolate(/*const std::string& game_name*/)
+{
+   return my->_isolate;
 }

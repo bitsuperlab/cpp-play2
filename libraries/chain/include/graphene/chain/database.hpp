@@ -204,6 +204,10 @@ namespace graphene { namespace chain {
           *  This signal is emitted after all block apply actions and do the game contract execution.
           */
          fc::signal<void(const signed_block&)>           on_game_execution;
+      
+         fc::signal<void(game_id_type)>                  on_game_play;
+         fc::signal<void(game_id_type)>                  on_game_evaluate;
+         fc::signal<void(game_id_type)>                  on_game_apply;
 
          //////////////////// db_witness_schedule.cpp ////////////////////
 

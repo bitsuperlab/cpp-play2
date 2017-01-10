@@ -1309,6 +1309,12 @@ public:
       
       tx.operations.push_back( game_play_op );
       
+      // TODO: get gthe game fees from game script:
+      auto game_fees = 0;
+      
+      // TODO: implement the on_game_play api
+      // _remote_db->on_game_play(game_play_op.game_to_play);
+      
       auto current_fees = _remote_db->get_global_properties().parameters.current_fees;
       set_operation_fees( tx, current_fees );
       

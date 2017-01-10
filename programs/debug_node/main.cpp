@@ -26,6 +26,7 @@
 #include <graphene/debug_witness/debug_witness.hpp>
 #include <graphene/account_history/account_history_plugin.hpp>
 #include <graphene/market_history/market_history_plugin.hpp>
+#include <graphene/game/game_plugin.hpp>
 
 #include <fc/exception/exception.hpp>
 #include <fc/thread/thread.hpp>
@@ -74,6 +75,7 @@ int main(int argc, char** argv) {
       auto witness_plug = node->register_plugin<debug_witness_plugin::debug_witness_plugin>();
       auto history_plug = node->register_plugin<account_history::account_history_plugin>();
       auto market_history_plug = node->register_plugin<market_history::market_history_plugin>();
+      auto game_plug = node->register_plugin<game_plugin::game_plugin>();
 
       try
       {

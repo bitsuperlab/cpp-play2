@@ -46,8 +46,8 @@ void_result game_create_evaluator::do_evaluate( const game_create_operation& op 
    auto& game_indx = d.get_index_type<game_index>();
    if( op.name.size() )
    {
-      auto current_game_itr = game_indx.indices().get<by_name>().find( op.name );
-      FC_ASSERT( current_game_itr == game_indx.indices().get<by_name>().end() );
+      auto current_game_itr = game_indx.indices().get<by_game_name>().find( op.name );
+      FC_ASSERT( current_game_itr == game_indx.indices().get<by_game_name>().end() );
    }
 
    return void_result();
@@ -57,9 +57,8 @@ object_id_type game_create_evaluator::do_apply( const game_create_operation& o )
 { try {
 
    database& d = db();
-   uint16_t referrer_percent = o.referrer_percent;
 
-   const auto& new_game_object = db().create<game_object>( [&]( game_object& obj ){
+   const auto& new_game_object = d.create<game_object>( [&]( game_object& obj ){
          obj.name = o.name;
          obj.description = o.description;
          obj.issuer = o.issuer;
@@ -78,7 +77,7 @@ void_result game_update_evaluator::do_evaluate( const game_update_operation& o )
    auto g_copy = g;
    g_copy.description = o.new_description;
    g_copy.script_code = o.new_script_code;
-   g_copy.validate();
+   // g_copy.validate();
 
    if( o.new_issuer )
    {
@@ -111,9 +110,10 @@ void_result game_play_evaluator::do_evaluate(const game_play_evaluator::operatio
 
    // TODO: delegate game_to_play
    game_to_play = &d.get(o.game_to_play);
+   
+   d.on_game_evaluate( game_to_play->get_id() );
 
    // TODO: bts::game::client::get_current().get_v8_engine( ogame->name )->evaluate( eval_state, input.game_id, input.data );
-   // TODO: send a game input evaluate signal?
 
    return void_result();
 } FC_CAPTURE_AND_RETHROW( (o) ) }
@@ -122,14 +122,15 @@ void_result game_play_evaluator::do_apply(const game_play_evaluator::operation_t
 { try {
    database& d = db();
 
-   const auto& new_game_play_object = db().create<game_play_object>( [&]( game_play_object& obj ){
-         obj.game_id = o.game_id;
-         obj.input = o.input;
+   const auto& new_game_play_object = d.create<game_play_object>( [&]( game_play_object& obj ){
+         obj.game_id = o.game_to_play;
+         obj.input = o.input_data;
          obj.ref_block_num = trx_state->_trx->ref_block_num;
          obj.ref_trx_id = trx_state->_trx->id();
    });
+   
+   d.on_game_apply( new_game_play_object.game_id );
    // TODO: bts::game::client::get_current().get_v8_engine( ogame->name )->play( eval_state, input.game_id, input.data );
-   // TODO: send a game evaluate signal?
 
    return void_result();
 } FC_CAPTURE_AND_RETHROW( (o) ) }

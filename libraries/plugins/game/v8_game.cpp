@@ -44,7 +44,7 @@ namespace graphene { namespace game_plugin {
             if (context.IsEmpty()) {
                 String::Utf8Value error(try_catch.Exception());
                 // wlog("Error creating context in game ${name}, error is ${e}", ("name", _game_name)("e", *error));
-                //FC_CAPTURE_AND_THROW(failed_game_engine_init);
+                FC_CAPTURE_AND_THROW(game_play_failed_game_engine_init);
             }
             _context.Reset(_isolate, context);
 
@@ -61,7 +61,7 @@ namespace graphene { namespace game_plugin {
                  //wlog("The souce is empty, error loading script code");
                  GetIsolate()->ThrowException( v8::String::NewFromUtf8(GetIsolate(), "Error loading file" ) );
                  String::Utf8Value error(try_catch.Exception());
-                 //FC_CAPTURE_AND_THROW(failed_loading_source_file, (_game_name)(*error));
+                 FC_CAPTURE_AND_THROW(game_play_failed_load_source_file, (_game_name)(*error));
              }
 
             String::Utf8Value utf8_source(source);
@@ -70,7 +70,7 @@ namespace graphene { namespace game_plugin {
             if ( script.IsEmpty() )
             {
                 // The TryCatch above is still in effect and will have caught the error.
-                //FC_CAPTURE_AND_THROW(failed_compile_script, (*utf8_source)(v8_helper::ReportException(GetIsolate(), &try_catch)));
+                FC_CAPTURE_AND_THROW(game_play_failed_compile_script, (*utf8_source)(v8_helper::ReportException(GetIsolate(), &try_catch)));
             } else
             {
                 // Run the script to get the result.
@@ -78,7 +78,7 @@ namespace graphene { namespace game_plugin {
 
                 if ( result.IsEmpty() )
                 {
-                    //FC_CAPTURE_AND_THROW(failed_run_script, (v8_helper::ReportException(GetIsolate(), &try_catch)));
+                    FC_CAPTURE_AND_THROW(game_play_failed_run_script, (v8_helper::ReportException(GetIsolate(), &try_catch)));
                 } else
                 {
                     wlog("Successfull to init the game engine.");
@@ -125,7 +125,7 @@ namespace graphene { namespace game_plugin {
        auto evaluate = play->ToObject()->Get( String::NewFromUtf8( my->GetIsolate(), "global") );
 
        if(!evaluate->IsFunction()) {
-           // FC_CAPTURE_AND_THROW( failed_compile_script );
+           FC_CAPTURE_AND_THROW( game_play_failed_compile_script );
        } else {
            evaluate_func = Handle<Function>::Cast(evaluate);
            argv[0] = v8_helper::cpp_to_json(isolate, game_id);
@@ -135,7 +135,7 @@ namespace graphene { namespace game_plugin {
 
            if ( result.IsEmpty() )
            {
-               // FC_CAPTURE_AND_THROW(failed_run_script, (v8_helper::ReportException(my->GetIsolate(), &try_catch)));
+               FC_CAPTURE_AND_THROW(game_play_failed_run_script, (v8_helper::ReportException(my->GetIsolate(), &try_catch)));
            } else
            {
                variant v = v8_helper::json_to_cpp<variant>(isolate, result);
