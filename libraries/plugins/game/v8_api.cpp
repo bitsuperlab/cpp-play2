@@ -3,42 +3,46 @@
 namespace graphene { namespace game_plugin {
    Persistent<ObjectTemplate> v8_api::global;
 
-   Persistent<FunctionTemplate> v8_api::blockchain_templ;
+   Persistent<FunctionTemplate> v8_api::database_templ;
 
    Persistent<FunctionTemplate> v8_api::wallet_templ;
 
-   Persistent<FunctionTemplate> v8_api::pendingstate_templ;
+   //Persistent<FunctionTemplate> v8_api::pendingstate_templ;
 
-   Persistent<FunctionTemplate> v8_api::eval_state_templ;
+   //Persistent<FunctionTemplate> v8_api::eval_state_templ;
 
-   Handle<FunctionTemplate> MakeBlockChainTemplate( Isolate* isolate) {
+   Handle<FunctionTemplate> MakeDatabaseTemplate( Isolate* isolate) {
       EscapableHandleScope handle_scope(isolate);
 
       Local<FunctionTemplate> result = FunctionTemplate::New(isolate);
 
       //assign the "BlockchainContext" name to the new class template
-      result->SetClassName(String::NewFromUtf8(isolate, "Blockchain"));
+      result->SetClassName(String::NewFromUtf8(isolate, "database"));
 
       //access the class template
       Handle<ObjectTemplate> proto = result->PrototypeTemplate();
 
       //associates the "method" string to the callback PointMethod in the class template
       //enabling point.method_a() constructions inside the javascript
-       
-       /*
-      proto->Set(isolate, "get_current_random_seed", FunctionTemplate::New(isolate, v8_blockchain::Get_Current_Random_Seed));
+      
+      proto->Set( isolate, "modify", FunctionTemplate::New(isolate, v8_database::Modify) );
+      proto->Set( isolate, "create", FunctionTemplate::New(isolate, v8_database::Create) );
+      proto->Set( isolate, "remove", FunctionTemplate::New(isolate, v8_database::Remove) );
+      
+      
+      //proto->Set(isolate, "get_current_random_seed", FunctionTemplate::New(isolate, v8_blockchain::Get_Current_Random_Seed));
 
-       proto->Set( isolate, "get_block_digest", FunctionTemplate::New( isolate, v8_blockchain::Get_Block_Digest));
+      //proto->Set( isolate, "get_block_digest", FunctionTemplate::New( isolate, v8_blockchain::Get_Block_Digest));
 
-       proto->Set( isolate, "get_block", FunctionTemplate::New( isolate, v8_blockchain::Get_Block));
+      //proto->Set( isolate, "get_block", FunctionTemplate::New( isolate, v8_blockchain::Get_Block));
 
-       proto->Set( isolate, "get_transaction", FunctionTemplate::New( isolate, v8_blockchain::Get_Transaction));
+      //proto->Set( isolate, "get_transaction", FunctionTemplate::New( isolate, v8_blockchain::Get_Transaction));
 
-       proto->Set( isolate, "get_asset_record", FunctionTemplate::New(isolate, v8_blockchain::Get_Asset_Record) );
+      //proto->Set( isolate, "get_asset_record", FunctionTemplate::New(isolate, v8_blockchain::Get_Asset_Record) );
 
-       proto->Set(isolate, "get_game_data_record", FunctionTemplate::New(isolate, v8_blockchain::Get_Game_Data_Record));
+      //proto->Set(isolate, "get_game_data_record", FunctionTemplate::New(isolate, v8_blockchain::Get_Game_Data_Record));
 
-       proto->Set(isolate, "get_account_record_by_name", FunctionTemplate::New(isolate, v8_blockchain::Get_Account_Record_By_Name));
+      //proto->Set(isolate, "get_account_record_by_name", FunctionTemplate::New(isolate, v8_blockchain::Get_Account_Record_By_Name));
         
         
 
@@ -49,93 +53,35 @@ namespace graphene { namespace game_plugin {
       inst->SetInternalFieldCount(1);
 
       //associates the name "x" with its Get/Set functions
-      inst->SetAccessor(String::NewFromUtf8(isolate, "block_num"), v8_blockchain::Get_Block_Number);
-        */
+      //inst->SetAccessor(String::NewFromUtf8(isolate, "block_num"), v8_blockchain::Get_Block_Number);
 
       // Again, return the result through the current handle scope.
       return handle_scope.Escape(result);
    }
 
-    Handle<FunctionTemplate> MakeWalletTemplate( Isolate* isolate) {
-        EscapableHandleScope handle_scope(isolate);
-
-        Local<FunctionTemplate> result = FunctionTemplate::New(isolate);
-
-        //assign the "BlockchainContext" name to the new class template
-        result->SetClassName(String::NewFromUtf8(isolate, "Wallet"));
-
-        //access the class template
-        Handle<ObjectTemplate> proto = result->PrototypeTemplate();
-
-        //associates the "method" string to the callback PointMethod in the class template
-        //enabling point.method_a() constructions inside the javascript
-        /*
-        proto->Set(isolate, "get_transaction_fee", FunctionTemplate::New(isolate, v8_wallet::Get_Transaction_Fee));
-
-        proto->Set(isolate, "get_wallet_key_for_address", FunctionTemplate::New(isolate, v8_wallet::Get_Wallet_Key_For_Address) );
-        proto->Set(isolate, "store_transaction", FunctionTemplate::New(isolate, v8_wallet::Store_Transaction) );
-         */
-
-        Handle<ObjectTemplate> inst = result->InstanceTemplate();
-
-        inst->SetInternalFieldCount(1);
-
-        // Again, return the result through the current handle scope.
-        return handle_scope.Escape(result);
-    }
-
-   Handle<FunctionTemplate> MakeChainStateTemplate( Isolate* isolate) {
+   Handle<FunctionTemplate> MakeWalletTemplate( Isolate* isolate) {
       EscapableHandleScope handle_scope(isolate);
 
       Local<FunctionTemplate> result = FunctionTemplate::New(isolate);
-      result->SetClassName(String::NewFromUtf8(isolate, "PendingState"));
+
+      //assign the "BlockchainContext" name to the new class template
+      result->SetClassName(String::NewFromUtf8(isolate, "Wallet"));
 
       //access the class template
-      Handle<ObjectTemplate> pendingstate_proto = result->PrototypeTemplate();
-       /*
-      pendingstate_proto->Set(isolate, "get_balance_record", FunctionTemplate::New(isolate, v8_chainstate::Get_Blance_Record));
-      pendingstate_proto->Set(isolate, "get_asset_record", FunctionTemplate::New(isolate, v8_chainstate::Get_Asset_Record));
-      pendingstate_proto->Set(isolate, "get_game_data_record", FunctionTemplate::New(isolate, v8_chainstate::Get_Game_Data_Record));
-      pendingstate_proto->Set(isolate, "get_account_record_by_name", FunctionTemplate::New(isolate, v8_chainstate::Get_Account_Record_By_Name));
+      Handle<ObjectTemplate> proto = result->PrototypeTemplate();
 
-      pendingstate_proto->Set(isolate, "set_balance_record", FunctionTemplate::New(isolate, v8_chainstate::Store_Blance_Record));
-      pendingstate_proto->Set(isolate, "set_asset_record", FunctionTemplate::New(isolate, v8_chainstate::Store_Asset_Record));
-      pendingstate_proto->Set(isolate, "set_game_data_record", FunctionTemplate::New(isolate, v8_chainstate::Store_Game_Data_Record));
-        */
+      //associates the "method" string to the callback PointMethod in the class template
+      //enabling point.method_a() constructions inside the javascript
+      /*
+      proto->Set(isolate, "get_transaction_fee", FunctionTemplate::New(isolate, v8_wallet::Get_Transaction_Fee));
 
+      proto->Set(isolate, "get_wallet_key_for_address", FunctionTemplate::New(isolate, v8_wallet::Get_Wallet_Key_For_Address) );
+      proto->Set(isolate, "store_transaction", FunctionTemplate::New(isolate, v8_wallet::Store_Transaction) );
+      */
 
-       //access the instance pointer of our new class template
-       Handle<ObjectTemplate> inst = result->InstanceTemplate();
+      Handle<ObjectTemplate> inst = result->InstanceTemplate();
 
-       //set the internal fields of the class as we have the Point class internally
-       inst->SetInternalFieldCount(1);
-
-       //associates the name "x" with its Get/Set functions
-       //inst->SetAccessor();
-
-      // Again, return the result through the current handle scope.
-      return handle_scope.Escape(result);
-   }
-
-   Handle<FunctionTemplate> MakeEvalStateTemplate( Isolate* isolate) {
-      EscapableHandleScope handle_scope(isolate);
-
-      Local<FunctionTemplate> result = FunctionTemplate::New(isolate);
-      result->SetClassName(String::NewFromUtf8(isolate, "EvalState"));
-
-      Handle<ObjectTemplate> eval_state_proto = result->PrototypeTemplate();
-       /*
-
-      eval_state_proto->Set(isolate, "sub_balance", FunctionTemplate::New(isolate, v8_evalstate::Sub_Balance));
-
-       eval_state_proto->Set(isolate, "get_transaction_id", FunctionTemplate::New(isolate, v8_evalstate::Get_Transaction_Id));
-        */
-
-       //access the instance pointer of our new class template
-       Handle<ObjectTemplate> inst = result->InstanceTemplate();
-
-       //set the internal fields of the class as we have the Point class internally
-       inst->SetInternalFieldCount(1);
+      inst->SetInternalFieldCount(1);
 
       // Again, return the result through the current handle scope.
       return handle_scope.Escape(result);
@@ -144,86 +90,127 @@ namespace graphene { namespace game_plugin {
    bool v8_api::init_class_template(v8::Isolate* isolate)
    {
       HandleScope handle_scope(isolate);
-      if ( blockchain_templ.IsEmpty() )
+      if ( database_templ.IsEmpty() )
       {
-         Handle<FunctionTemplate> raw_template = MakeBlockChainTemplate(isolate);
-         blockchain_templ.Reset(isolate, raw_template);
+         Handle<FunctionTemplate> raw_template = MakeDatabaseTemplate(isolate);
+         database_templ.Reset(isolate, raw_template);
       }
 
-       if ( wallet_templ.IsEmpty() )
-       {
-           Handle<FunctionTemplate> raw_template = MakeWalletTemplate(isolate);
-           wallet_templ.Reset(isolate, raw_template);
-       }
-
-      if ( pendingstate_templ.IsEmpty() )
+      if ( wallet_templ.IsEmpty() )
       {
-         Handle<FunctionTemplate> raw_template = MakeChainStateTemplate(isolate);
-         pendingstate_templ.Reset(isolate, raw_template);
-      }
-
-      if ( eval_state_templ.IsEmpty() )
-      {
-         Handle<FunctionTemplate> raw_template = MakeEvalStateTemplate(isolate);
-         eval_state_templ.Reset(isolate, raw_template);
+         Handle<FunctionTemplate> raw_template = MakeWalletTemplate(isolate);
+         wallet_templ.Reset(isolate, raw_template);
       }
 
       return true;
    }
 
+   /// v8_database
+   Local<Object> v8_database::New(v8::Isolate* isolate, v8_database* local_v8_database)
+   {
+      EscapableHandleScope handle_scope(isolate);
+
+      //get class template
+      Handle<FunctionTemplate> templ = Local<FunctionTemplate>::New(isolate, v8_api::database_templ);
+      Handle<Function> database_ctor = templ->GetFunction();
+
+      //get class instance
+      Local<Object> g_database = database_ctor->NewInstance();
+
+      //build the "bridge" between c++ and javascript by associating the 'p' pointer to the first internal
+      //field of the object
+      g_database->SetInternalField(0, External::New(isolate, local_v8_database));
+
+      // delete v8_blockchain;
+
+      return handle_scope.Escape(g_database);
+   }
+   
+   void v8_database::Create(const v8::FunctionCallbackInfo<Value>& args)
+   {
+      EscapableHandleScope handle_scope(args.GetIsolate());
+      Local<Object> self = args.Holder();
+      Local<External> wrap = Local<External>::Cast(self->GetInternalField(0));
+      void* ptr = wrap->Value();
+      
+      auto db = static_cast<v8_database*>(ptr)->_database;
+      
+      auto space_id = args[0]->Int32Value();
+      auto type_id = args[1]->Int32Value();
+      
+      fc::variant new_object_value = v8_helper::json_to_cpp<fc::variant>(args.GetIsolate(), args[2]);
+      
+      auto& idx = db->get_mutable_index(space_id, type_id);
+      
+      // same to db->create
+      idx.create( [&](chain::object& o){
+         idx.object_from_variant(new_object_value, o);
+      } );
+   }
+
+   void v8_database::Modify(const v8::FunctionCallbackInfo<Value>& args)
+   {
+      EscapableHandleScope handle_scope(args.GetIsolate());
+      Local<Object> self = args.Holder();
+      Local<External> wrap = Local<External>::Cast(self->GetInternalField(0));
+      void* ptr = wrap->Value();
+      
+      Local<External> wrapper_object_type_id = Local<External>::Cast(args[0]);
+      auto object_id = * static_cast<chain::object_id_type*>(wrapper_object_type_id->Value());
+      
+      std::string property_name = v8_helper::ToCString(String::Utf8Value(args[1]->ToString(args.GetIsolate())));
+      
+      fc::variant new_property_value = v8_helper::json_to_cpp<fc::variant>(args.GetIsolate(), args[2]);
+      
+      auto db = static_cast<v8_database*>(ptr)->_database;
+      
+      const chain::object& obj = db->get_object( object_id );
+      
+      auto v = fc::mutable_variant_object(obj);
+      
+      // update the property value
+      v[property_name] = fc::variant(new_property_value);
+      
+      db->modify( obj, [&]( chain::object& obj ){
+         auto& idx = db->get_index(object_id);
+         idx.object_from_variant(v, obj);
+      });
+   }
+   
+   void v8_database::Remove(const v8::FunctionCallbackInfo<Value>& args)
+   {
+      EscapableHandleScope handle_scope(args.GetIsolate());
+      Local<Object> self = args.Holder();
+      Local<External> wrap = Local<External>::Cast(self->GetInternalField(0));
+      void* ptr = wrap->Value();
+      
+      auto db = static_cast<v8_database*>(ptr)->_database;
+      
+      Local<External> wrapper_object_type_id = Local<External>::Cast(args[0]);
+      auto object_id = * static_cast<chain::object_id_type*>(wrapper_object_type_id->Value());
+      
+      const chain::object& obj = db->get_object( object_id );
+      
+      db->remove(obj);
+   }
+   
    /**
     * @brief Global method for create balance id for the owner of balance
     *
     */
     /*
-   void v8_api::V8_Global_Get_Balance_ID_For_Owner(const v8::FunctionCallbackInfo<Value>& args)
-   {
-       EscapableHandleScope handle_scope(args.GetIsolate());
-
-      auto owner = * static_cast<address*> (Local<External>::Cast(args[0])->Value());
-
-      int asset_id = args[1]->Int32Value();
-
-      auto addr = withdraw_condition( withdraw_with_signature(owner), asset_id ).get_address();
-
-      args.GetReturnValue().Set( External::New(args.GetIsolate(), &addr) );
-   }
-
-   Local<Object> v8_blockchain::New(v8::Isolate* isolate, v8_blockchain* local_v8_blockchain)
-   {
-      EscapableHandleScope handle_scope(isolate);
-
-      //get class template
-      Handle<FunctionTemplate> templ = Local<FunctionTemplate>::New(isolate, v8_api::blockchain_templ);
-      Handle<Function> blockchain_ctor = templ->GetFunction();
-
-      //get class instance
-      Local<Object> g_blockchain = blockchain_ctor->NewInstance();
-
-      //build the "bridge" between c++ and javascript by associating the 'p' pointer to the first internal
-      //field of the object
-      g_blockchain->SetInternalField(0, External::New(isolate, local_v8_blockchain));
-
-      // delete v8_blockchain;
-
-      return handle_scope.Escape(g_blockchain);
-   }
-
-   void v8_blockchain::Get_Block_Number(Local<String> property, const v8::PropertyCallbackInfo<v8::Value>& info)
-   {
-       EscapableHandleScope handle_scope(info.GetIsolate());
-      //get object holder
-      Local<Object> self = info.Holder();
-      //get the holder's external object
-      Local<External> wrap = Local<External>::Cast(self->GetInternalField(0));
-      //get the pointer for Point
-      void* ptr = wrap->Value();
-      //get member variable value
-      uint32_t value = static_cast<v8_blockchain*>(ptr)->_block_num;
-      //return the value
-      info.GetReturnValue().Set( Integer::New(info.GetIsolate(), value) );
-   }
-
+     void v8_api::V8_Global_Get_Balance_ID_For_Owner(const v8::FunctionCallbackInfo<Value>& args)
+     {
+     EscapableHandleScope handle_scope(args.GetIsolate());
+     
+     auto owner = * static_cast<address*> (Local<External>::Cast(args[0])->Value());
+     
+     int asset_id = args[1]->Int32Value();
+     
+     auto addr = withdraw_condition( withdraw_with_signature(owner), asset_id ).get_address();
+     
+     args.GetReturnValue().Set( External::New(args.GetIsolate(), &addr) );
+     }
     void v8_blockchain::Get_Block_Digest(const v8::FunctionCallbackInfo<Value>& args)
     {
         EscapableHandleScope handle_scope(args.GetIsolate());
