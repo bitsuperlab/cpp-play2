@@ -75,6 +75,8 @@ namespace graphene { namespace db {
          const index&  get_index()const { return get_index(T::space_id,T::type_id); }
          const index&  get_index(uint8_t space_id, uint8_t type_id)const;
          const index&  get_index(object_id_type id)const { return get_index(id.space(),id.type()); }
+      
+         index& get_mutable_index(uint8_t space_id, uint8_t type_id);
          /// @}
 
          const object& get_object( object_id_type id )const;
@@ -154,7 +156,8 @@ namespace graphene { namespace db {
          template<typename T>
          index& get_mutable_index()                   { return get_mutable_index(T::space_id,T::type_id); }
          index& get_mutable_index(object_id_type id)  { return get_mutable_index(id.space(),id.type());   }
-         index& get_mutable_index(uint8_t space_id, uint8_t type_id);
+         // moved to public
+         // index& get_mutable_index(uint8_t space_id, uint8_t type_id);
 
      private:
 

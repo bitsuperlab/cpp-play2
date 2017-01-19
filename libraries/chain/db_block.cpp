@@ -500,6 +500,9 @@ void database::_apply_block( const signed_block& next_block )
       apply_transaction( trx, skip | skip_transaction_signatures );
       ++_current_trx_in_block;
    }
+   
+   // game internal contract execution
+   on_game_execution(next_block);
 
    update_global_dynamic_data(next_block);
    update_signing_witness(signing_witness, next_block);

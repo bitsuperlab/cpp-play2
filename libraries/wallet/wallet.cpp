@@ -1312,7 +1312,7 @@ public:
       // TODO: get gthe game fees from game script:
       auto game_fees = 0;
       
-      // TODO: implement the on_game_play api
+      // TODO: implement the on_game_play api to get fees or required signatures.
       // _remote_db->on_game_play(game_play_op.game_to_play);
       
       auto current_fees = _remote_db->get_global_properties().parameters.current_fees;
