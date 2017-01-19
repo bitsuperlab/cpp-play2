@@ -205,9 +205,9 @@ namespace graphene { namespace chain {
           */
          fc::signal<void(const signed_block&)>           on_game_execution;
       
-         fc::signal<void(game_id_type)>                  on_game_play;
-         fc::signal<void(game_id_type)>                  on_game_evaluate;
-         fc::signal<void(game_id_type)>                  on_game_apply;
+         fc::signal<void(game_id_type)>                           on_game_play;
+         fc::signal<void(const game_play_operation&)>             on_game_evaluate;
+         fc::signal<void(const game_play_operation&, const game_play_object&)>                  on_game_apply;
 
          //////////////////// db_witness_schedule.cpp ////////////////////
 

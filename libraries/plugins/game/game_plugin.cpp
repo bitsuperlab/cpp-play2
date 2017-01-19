@@ -272,13 +272,26 @@ void game_plugin::plugin_initialize(const boost::program_options::variables_map&
 { try {
    ilog("game plugin:  plugin_initialize() begin");
    _options = &options;
+   
+   auto& db = database();
 
-   database().on_game_execution.connect( [&]( const signed_block& b){ execute(b.block_num()); } );
-   database().on_game_play.connect([&]( game_id_type game_id) { /* play(game_id); // get_v8_engine(game_id)->play(...)*/ } );
+   db.on_game_execution.connect( [&]( const signed_block& b){
+      execute(b, db);
+   } );
+   
+   db.on_game_play.connect([&]( game_id_type game_id) { /* play(game_id); // get_v8_engine(game_id)->play(...)*/ } );
 
-   database().on_game_evaluate.connect([&]( game_id_type game_id) { /* evaluate(game_id); // get_v8_engine(game_id)->evalute(...)*/ } );
+   db.on_game_evaluate.connect([&]( const game_play_operation& op) {
+      auto game_to_play = db.get(op.game_to_play);
+      auto v8_game_engine = get_v8_engine( game_to_play.name );
+      v8_game_engine->evaluate(op, db);
+   } );
 
-   database().on_game_apply.connect([&]( game_id_type game_id) { /* apply(game_id); // get_v8_engine(game_id)->apply(...)*/ } );
+   db.on_game_apply.connect([&]( const game_play_operation& op, const game_play_object& obj) {
+      auto game_to_play = db.get(op.game_to_play);
+      auto v8_game_engine = get_v8_engine( game_to_play.name );
+      v8_game_engine->apply(op, obj, db);
+   } );
 
    ilog("game plugin:  plugin_initialize() end");
 } FC_LOG_AND_RETHROW() }
@@ -316,9 +329,9 @@ const asset_object& game_plugin::get_game_asset( const string& symbol )
    return *itr;
 }
 
-void game_plugin::execute( uint32_t block_num )
+void game_plugin::execute( const signed_block& b, chain::database& db )
 { try {
-    wlog("Start executing in game client at block ${b}", ("b", block_num));
+    wlog("Start executing in game client at block ${b}", ("b", b.block_num()));
     const auto& games = database().get_index_type<game_index>().indices();
     for( auto itr = games.begin(); itr != games.end();
        ++itr )
@@ -326,14 +339,14 @@ void game_plugin::execute( uint32_t block_num )
       try {
           auto v8_game_engine = get_v8_engine( itr->name );
           wlog("Start execute the game ${g}", ("g", itr->name));
-          // v8_game_engine->execute( itr->get_id(), block_num );
+          v8_game_engine->execute( b, db );
       }
       catch (const game_play_game_engine_not_found& e)
       {
           wlog("game engine note found, failed to init for unknown reason during chain execution");
       }
     }
-} FC_CAPTURE_AND_RETHROW( (block_num) ) }
+} FC_CAPTURE_AND_RETHROW( (b) ) }
 
 v8_game_engine_ptr game_plugin::get_v8_engine(const std::string& game_name)
 {

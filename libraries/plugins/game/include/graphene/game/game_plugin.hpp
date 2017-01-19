@@ -56,7 +56,7 @@ public:
 
    void* get_isolate(/*const std::string& game_name*/);
 
-   void execute( uint32_t block_num );
+   void execute( const signed_block& b, chain::database& db );
 
    v8_game_engine_ptr get_v8_engine(const std::string& game_name);
 

@@ -34,10 +34,12 @@ namespace graphene { namespace game_plugin {
       ~v8_game_engine(){};
 
       bool global( game_id_type game_id, asset_object game_asset);
-      /*
-      void evaluate( transaction_evaluation_state& eval_state, game_id_type game_id, const variant& var);
-      */
-      void execute( game_id_type game_id, uint32_t block_num);
+      
+      void evaluate( const game_play_operation& op, database& db );
+      
+      void apply( const game_play_operation& op, const game_play_object& obj, database& db );
+       
+      void execute( const signed_block& block, database& db );
 
    private:
       std::shared_ptr<detail::v8_game_engine_impl> my;

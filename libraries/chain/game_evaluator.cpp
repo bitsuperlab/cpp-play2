@@ -108,10 +108,11 @@ void_result game_play_evaluator::do_evaluate(const game_play_evaluator::operatio
 { try {
    database& d = db();
 
-   // TODO: delegate game_to_play
    game_to_play = &d.get(o.game_to_play);
    
-   d.on_game_evaluate( game_to_play->get_id() );
+   FC_ASSERT( d.find_object(o.player), "Invalid player account specified." );
+   
+   d.on_game_evaluate( o );
 
    // TODO: bts::game::client::get_current().get_v8_engine( ogame->name )->evaluate( eval_state, input.game_id, input.data );
 
@@ -129,7 +130,7 @@ void_result game_play_evaluator::do_apply(const game_play_evaluator::operation_t
          obj.ref_trx_id = trx_state->_trx->id();
    });
    
-   d.on_game_apply( new_game_play_object.game_id );
+   d.on_game_apply( o, new_game_play_object );
    // TODO: bts::game::client::get_current().get_v8_engine( ogame->name )->play( eval_state, input.game_id, input.data );
 
    return void_result();
