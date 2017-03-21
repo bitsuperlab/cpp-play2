@@ -1364,8 +1364,8 @@ public:
       create_op.issuer = issuer_account.id;
       create_op.symbol = symbol;
       create_op.precision = precision;
-      create_op.current_supply = initial_supply;
-      create_op.current_collateral = initial_collateral;
+      create_op.initial_supply = initial_supply;
+      create_op.initial_collateral = initial_collateral;
       create_op.common_options = common;
       create_op.bitasset_opts = bitasset_opts;
 
@@ -2522,7 +2522,7 @@ public:
       opts.flags &= ~(white_list | disable_force_settle | global_settle);
       opts.issuer_permissions = opts.flags;
       opts.core_exchange_rate = price(asset(1), asset(1,asset_id_type(1)));
-      create_asset(get_account(creator).name, symbol, 2, opts, {}, true);
+      create_asset(get_account(creator).name, symbol, 2, 0, "0", opts, {}, true);
    }
 
    void dbg_make_mia(string creator, string symbol)
@@ -2532,7 +2532,7 @@ public:
       opts.issuer_permissions = opts.flags;
       opts.core_exchange_rate = price(asset(1), asset(1,asset_id_type(1)));
       bitasset_options bopts;
-      create_asset(get_account(creator).name, symbol, 2, opts, bopts, true);
+      create_asset(get_account(creator).name, symbol, 2, 0, "0", opts, bopts, true);
    }
 
    void dbg_push_blocks( const std::string& src_filename, uint32_t count )
@@ -3275,12 +3275,14 @@ signed_transaction wallet_api::transfer(string from, string to, string amount,
 signed_transaction wallet_api::create_asset(string issuer,
                                             string symbol,
                                             uint8_t precision,
+                                            share_type initial_supply,
+                                            string initial_collateral_amount,
                                             asset_options common,
                                             fc::optional<bitasset_options> bitasset_opts,
                                             bool broadcast)
 
 {
-   return my->create_asset(issuer, symbol, precision, common, bitasset_opts, broadcast);
+   return my->create_asset(issuer, symbol, precision, initial_supply, initial_collateral_amount, common, bitasset_opts, broadcast);
 }
 
 signed_transaction wallet_api::update_asset(string symbol,
