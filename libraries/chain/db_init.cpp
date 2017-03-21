@@ -353,6 +353,7 @@ void database::init_genesis(const genesis_state_type& genesis_state)
       const asset_dynamic_data_object& dyn_asset =
          create<asset_dynamic_data_object>([&](asset_dynamic_data_object& a) {
             a.current_supply = 0;
+            a.current_collateral = 0;
          });
       const asset_object& asset_obj = create<asset_object>( [&]( asset_object& a ) {
          a.symbol = "SPECIAL" + std::to_string( id );
@@ -598,6 +599,7 @@ void database::init_genesis(const genesis_state_type& genesis_state)
        modify( get( asset_id ), [ & ]( asset_object& asset ) {
            modify( get( asset.dynamic_asset_data_id ), [ & ]( asset_dynamic_data_object& asset_data ) {
                asset_data.current_supply = total_supply;
+               asset_data.current_collateral = 0;
            } );
        } );
    }

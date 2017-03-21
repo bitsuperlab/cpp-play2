@@ -98,7 +98,8 @@ object_id_type asset_create_evaluator::do_apply( const asset_create_operation& o
 { try {
    const asset_dynamic_data_object& dyn_asset =
       db().create<asset_dynamic_data_object>( [&]( asset_dynamic_data_object& a ) {
-         a.current_supply = 0;
+         a.current_supply = op.initial_supply;
+         a.current_collateral = op.initial_collateral;
          a.fee_pool = core_fee_paid; //op.calculate_fee(db().current_fee_schedule()).value / 2;
       });
 
@@ -140,6 +141,7 @@ void_result asset_issue_evaluator::do_evaluate( const asset_issue_operation& o )
    const asset_object& a = o.asset_to_issue.asset_id(d);
    FC_ASSERT( o.issuer == a.issuer );
    FC_ASSERT( !a.is_market_issued(), "Cannot manually issue a market-issued asset." );
+   FC_ASSERT( !a.is_game_issued(d), "Cannot manually issue a game-issued asset." );
 
    to_account = &o.issue_to_account(d);
    FC_ASSERT( is_authorized_asset( d, *to_account, a ) );

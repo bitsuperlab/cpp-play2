@@ -995,6 +995,8 @@ class wallet_api
        * @param symbol the ticker symbol of the new asset
        * @param precision the number of digits of precision to the right of the decimal point,
        *                  must be less than or equal to 12
+       * @param initial_supply the initial supply in sotoshi unit.
+       * @param initial_collateral_amount the initial amount in CORE.
        * @param common asset options required for all new assets.
        *               Note that core_exchange_rate technically needs to store the asset ID of
        *               this new asset. Since this ID is not known at the time this operation is
@@ -1008,6 +1010,8 @@ class wallet_api
       signed_transaction create_asset(string issuer,
                                       string symbol,
                                       uint8_t precision,
+                                      share_type initial_supply,
+                                      string initial_collateral_amount,
                                       asset_options common,
                                       fc::optional<bitasset_options> bitasset_opts,
                                       bool broadcast = false);

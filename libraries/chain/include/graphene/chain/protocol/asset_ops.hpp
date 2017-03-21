@@ -132,6 +132,9 @@ namespace graphene { namespace chain {
       string                  symbol;
       /// Number of digits to the right of decimal point, must be less than or equal to 12
       uint8_t                 precision = 0;
+       
+      share_type              initial_supply = 0;
+      share_type              initial_collateral = 0;
 
       /// Options common to all assets.
       ///
@@ -491,6 +494,8 @@ FC_REFLECT( graphene::chain::asset_create_operation,
             (issuer)
             (symbol)
             (precision)
+            (initial_supply)
+            (initial_collateral)
             (common_options)
             (bitasset_opts)
             (is_prediction_market)

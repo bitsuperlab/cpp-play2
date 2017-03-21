@@ -1348,17 +1348,24 @@ public:
    signed_transaction create_asset(string issuer,
                                    string symbol,
                                    uint8_t precision,
+                                   share_type initial_supply,
+                                   string initial_collateral_amount,
                                    asset_options common,
                                    fc::optional<bitasset_options> bitasset_opts,
                                    bool broadcast = false)
    { try {
       account_object issuer_account = get_account( issuer );
       FC_ASSERT(!find_asset(symbol).valid(), "Asset with that symbol already exists!");
+       
+      asset_object core_asset = get_asset(asset_id_type());
+      share_type initial_collateral = core_asset.amount_from_string(initial_collateral_amount).amount;
 
       asset_create_operation create_op;
       create_op.issuer = issuer_account.id;
       create_op.symbol = symbol;
       create_op.precision = precision;
+      create_op.current_supply = initial_supply;
+      create_op.current_collateral = initial_collateral;
       create_op.common_options = common;
       create_op.bitasset_opts = bitasset_opts;
 

@@ -62,6 +62,7 @@ namespace graphene { namespace chain {
 
          /// The number of shares currently in existence
          share_type current_supply;
+         share_type current_collateral;
          share_type confidential_supply; ///< total asset held in confidential balances
          share_type accumulated_fees; ///< fees accumulate to be paid out over time
          share_type fee_pool;         ///< in core asset
@@ -87,6 +88,9 @@ namespace graphene { namespace chain {
 
          /// @return true if this is a market-issued asset; false otherwise.
          bool is_market_issued()const { return bitasset_data_id.valid(); }
+         /// @return true if this is a game-issued asset; false otherwise.
+         template<class DB>
+         bool is_game_issued( const DB& db )const { return dynamic_data(db).current_collateral > 0; }
          /// @return true if users may request force-settlement of this market-issued asset; false otherwise
          bool can_force_settle()const { return !(options.flags & disable_force_settle); }
          /// @return true if the issuer of this market-issued asset may globally settle the asset; false otherwise
@@ -250,7 +254,7 @@ namespace graphene { namespace chain {
 } } // graphene::chain
 
 FC_REFLECT_DERIVED( graphene::chain::asset_dynamic_data_object, (graphene::db::object),
-                    (current_supply)(confidential_supply)(accumulated_fees)(fee_pool) )
+                    (current_supply)(current_collateral)(confidential_supply)(accumulated_fees)(fee_pool) )
 
 FC_REFLECT_DERIVED( graphene::chain::asset_bitasset_data_object, (graphene::db::object),
                     (feeds)
