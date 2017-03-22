@@ -250,6 +250,37 @@ namespace graphene { namespace app {
          
                                          
          range_proof_info range_get_info( const std::vector<char>& proof );
+       
+         /**
+          * Calculate the C(N,r) of space N in uint16_t(0-65535) and r in uint16_t(0-65535).
+          *
+          * @param N The N number in C(N, r) (uint16_t, required)
+          * @param r The r number in C(N, r) (uint16_t, required)
+          *
+          * @return uint64_t
+          */
+         uint64_t game_util_cnr(uint16_t N, uint16_t r) const;
+
+         /**
+          * Mapping an array of uint16_t(0-65535) to ralated combination nature number.
+          *
+          * @param combination The combination nature number mapped by the combination array (uint16_t_array, required)
+          *
+          * @return uint64_t
+          */
+         uint64_t game_util_ranking(const std::vector<uint16_t>& combination) const;
+
+         /**
+          * Mapping an array of uint16_t(0-65535) to ralated combination nature number.
+          *
+          * @param number The nature number to be mapped by the combination array, should be less than C(N,k) (uint64_t,
+          *               required)
+          * @param k The k number in C(N, k) (uint16_t, required)
+          * @param N The N number in C(N, k) (uint16_t, required)
+          *
+          * @return uint16_t_array
+          */
+         std::vector<uint16_t> game_util_unranking(uint64_t number, uint16_t k, uint16_t N) const;
    };
 
    /**

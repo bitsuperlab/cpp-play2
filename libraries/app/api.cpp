@@ -36,6 +36,7 @@
 #include <graphene/chain/transaction_object.hpp>
 #include <graphene/chain/withdraw_permission_object.hpp>
 #include <graphene/chain/game_object.hpp>
+#include <graphene/utilities/combinatorics.hpp>
 
 #include <fc/crypto/hex.hpp>
 #include <fc/smart_ref_impl.hpp>
@@ -554,6 +555,22 @@ namespace graphene { namespace app {
     range_proof_info crypto_api::range_get_info( const std::vector<char>& proof )
     {
        return fc::ecc::range_get_info( proof );
+    }
+    
+    uint64_t crypto_api::game_util_cnr(uint16_t N, uint16_t r) const
+    {
+       return graphene::utilities::cnr(N, r);
+    }
+    
+    uint64_t crypto_api::game_util_ranking(const std::vector<uint16_t>& combination) const
+    {
+       return graphene::utilities::ranking(combination);
+    }
+    
+    std::vector<uint16_t> crypto_api::game_util_unranking(uint64_t number, uint16_t k, uint16_t N) const
+    {
+        FC_ASSERT( number < graphene::utilities::cnr(N, k) );
+        return graphene::utilities::unranking(number, k, N);
     }
 
 } } // graphene::app

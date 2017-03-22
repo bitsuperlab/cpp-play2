@@ -19,6 +19,7 @@ set(sources
    tempdir.cpp
    words.cpp
    http_downloader.cpp
+   combinatorics.cpp
    ${headers})
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/git_revision.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/git_revision.cpp" @ONLY)
