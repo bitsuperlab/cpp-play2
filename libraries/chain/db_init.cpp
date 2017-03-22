@@ -46,6 +46,8 @@
 #include <graphene/chain/witness_object.hpp>
 #include <graphene/chain/witness_schedule_object.hpp>
 
+#include <graphene/chain/game_object.hpp>
+
 #include <graphene/chain/account_evaluator.hpp>
 #include <graphene/chain/asset_evaluator.hpp>
 #include <graphene/chain/assert_evaluator.hpp>
@@ -59,6 +61,8 @@
 #include <graphene/chain/vesting_balance_evaluator.hpp>
 #include <graphene/chain/withdraw_permission_evaluator.hpp>
 #include <graphene/chain/witness_evaluator.hpp>
+
+#include <graphene/chain/game_evaluator.hpp>
 
 #include <graphene/chain/protocol/fee_schedule.hpp>
 
@@ -120,6 +124,9 @@ const uint8_t withdraw_permission_object::type_id;
 
 const uint8_t witness_object::space_id;
 const uint8_t witness_object::type_id;
+    
+    const uint8_t game_object::space_id;
+    const uint8_t game_object::type_id;
 
 void database::initialize_evaluators()
 {
@@ -164,6 +171,10 @@ void database::initialize_evaluators()
    register_evaluator<transfer_from_blind_evaluator>();
    register_evaluator<blind_transfer_evaluator>();
    register_evaluator<asset_claim_fees_evaluator>();
+    
+    register_evaluator<game_create_evaluator>();
+    register_evaluator<game_update_evaluator>();
+    register_evaluator<game_play_evaluator>();
 }
 
 void database::initialize_indexes()
@@ -191,6 +202,8 @@ void database::initialize_indexes()
    add_index< primary_index<vesting_balance_index> >();
    add_index< primary_index<balance_index> >();
    add_index< primary_index<blinded_balance_index> >();
+    
+    add_index< primary_index<game_index> >();
 
    //Implementation object indexes
    add_index< primary_index<transaction_index                             > >();
@@ -208,6 +221,8 @@ void database::initialize_indexes()
    add_index< primary_index< buyback_index                                > >();
 
    add_index< primary_index< simple_index< fba_accumulator_object       > > >();
+    
+
 }
 
 void database::init_genesis(const genesis_state_type& genesis_state)
