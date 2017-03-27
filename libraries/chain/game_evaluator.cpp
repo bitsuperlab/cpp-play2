@@ -31,6 +31,7 @@
 #include <graphene/chain/internal_exceptions.hpp>
 #include <graphene/chain/special_authority.hpp>
 #include <graphene/chain/special_authority_object.hpp>
+#include <graphene/chain/is_authorized_asset.hpp>
 
 #include <algorithm>
 
@@ -135,5 +136,50 @@ void_result game_play_evaluator::do_apply(const game_play_evaluator::operation_t
 
    return void_result();
 } FC_CAPTURE_AND_RETHROW( (o) ) }
+    
+    
+    
+    
+    void_result game_buy_chips_evaluator::do_evaluate(const game_buy_chips_evaluator::operation_type& op)
+    { try {
+        
+        database& d = db();
+        
+        const account_id_type& buyer        = op.buyer;
+        const asset_object& sell_asset_obj    = op.amount_to_sell.asset_id(d);
+        const asset_object& receive_asset_obj = op.amount_to_receive.asset_id(d);
+ 
+        FC_ASSERT( is_authorized_asset( d, d.get(buyer), sell_asset_obj ) );
+        FC_ASSERT( is_authorized_asset( d, d.get(buyer), receive_asset_obj ) );
+        
+        FC_ASSERT( d.get_balance( d.get(buyer), sell_asset_obj ) >= op.amount_to_sell, "insufficient balance",
+                ("balance",d.get_balance(d.get(buyer), sell_asset_obj))("amount_to_sell",op.amount_to_sell) );
+        
+        
+        _asset_dyn_data = &receive_asset_obj.dynamic_asset_data_id(d);
+        
+        FC_ASSERT( (_asset_dyn_data->current_supply + op.amount_to_receive.amount) <= receive_asset_obj.options.max_supply );
+
+   
+        return void_result();
+    } FC_CAPTURE_AND_RETHROW( (op) ) }
+    
+    void_result game_buy_chips_evaluator::do_apply(const game_buy_chips_evaluator::operation_type& op)
+    { try {
+        
+        database& d = db();
+        FC_ASSERT( d.find_object(op.buyer), "Invalid owner account specified." );
+        
+        db().adjust_balance(op.buyer, -op.amount_to_sell);
+        db().adjust_balance(op.buyer, op.amount_to_receive);
+        
+        db().modify( *_asset_dyn_data, [&]( asset_dynamic_data_object& data ){
+            data.current_supply += op.amount_to_receive.amount;
+            data.current_collateral += op.amount_to_sell.amount;
+        });
+  
+        return void_result();
+    } FC_CAPTURE_AND_RETHROW( (op) ) }
+    
 
 } } // graphene::chain

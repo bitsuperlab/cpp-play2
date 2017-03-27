@@ -116,6 +116,23 @@ namespace graphene { namespace chain {
       void            validate()const;
       share_type      calculate_fee(const fee_parameters_type& )const;
     };
+    
+    struct game_buy_chips_operation : public base_operation
+    {
+        struct fee_parameters_type { uint64_t fee = 5 * GRAPHENE_BLOCKCHAIN_PRECISION; };
+        
+        asset           fee;
+        account_id_type buyer;
+        
+        asset           amount_to_sell;  // always core asset
+        asset           amount_to_receive;
+        
+        account_id_type fee_payer()const { return buyer; }
+        void            validate()const;
+        share_type      calculate_fee(const fee_parameters_type& )const;
+        
+    };
+    
 } } // graphene::chain
 
 FC_REFLECT( graphene::chain::game_create_operation, (fee)(name)(description)(issuer)(script_code) )
@@ -124,6 +141,12 @@ FC_REFLECT( graphene::chain::game_update_operation, (fee)(issuer)(game_to_update
 
 FC_REFLECT( graphene::chain::game_play_operation, (fee)(player)(game_to_play)(input_data) )
 
+
+
+FC_REFLECT( graphene::chain::game_buy_chips_operation, (fee)(buyer)(amount_to_sell)(amount_to_receive) )
+
 FC_REFLECT( graphene::chain::game_create_operation::fee_parameters_type, (basic_fee)(premium_fee)(price_per_kbyte) )
 FC_REFLECT( graphene::chain::game_update_operation::fee_parameters_type, (fee)(price_per_kbyte) )
 FC_REFLECT( graphene::chain::game_play_operation::fee_parameters_type, (fee)(price_per_kbyte) )
+
+FC_REFLECT( graphene::chain::game_buy_chips_operation::fee_parameters_type, (fee) )

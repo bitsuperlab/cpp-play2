@@ -957,6 +957,21 @@ class wallet_api
                               double rate,
                               double amount,
                               bool broadcast );
+    
+    /** Buy game assets.
+     *
+     * This API helps to buy game issued assets. The price of the asset is caculated by current_collateral/current_supply.
+     *
+     * @param buyer_account The account buying the asset for another asset.
+     * @param game_asset_symbol The name or id of the asset to buy.
+     * @param amount_to_buy The amount of asset you want to buy.
+     * @param broadcast true to broadcast the transaction on the network.
+     * @param The signed transaction selling the funds.
+     */
+      signed_transaction buy_game_chips( string buyer_account,
+                                        string game_asset_symbol,
+                                        string amount_to_buy,
+                                        bool broadcast);
 
       /** Borrow an asset or update the debt/collateral ratio for the loan.
        *
@@ -1595,6 +1610,7 @@ FC_API( graphene::wallet::wallet_api,
         (create_game)
         (update_game)
         (play_game)
+        (buy_game_chips)
         (sell_asset)
         (sell)
         (buy)

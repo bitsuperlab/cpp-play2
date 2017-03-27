@@ -37,7 +37,7 @@ namespace graphene { namespace chain {
 void_result asset_create_evaluator::do_evaluate( const asset_create_operation& op )
 { try {
    // Disable Operation Temporary
-   FC_ASSERT( false, "Asset create operation is not supported for now.");
+   //FC_ASSERT( false, "Asset create operation is not supported for now.");
 
    database& d = db();
 

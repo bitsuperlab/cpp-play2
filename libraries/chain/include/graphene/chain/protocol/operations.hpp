@@ -93,7 +93,8 @@ namespace graphene { namespace chain {
             fba_distribute_operation,        // VIRTUAL
             game_create_operation,
             game_update_operation,
-            game_play_operation
+            game_play_operation,
+            game_buy_chips_operation
          > operation;
 
    /// @} // operations group

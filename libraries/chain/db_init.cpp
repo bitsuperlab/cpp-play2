@@ -174,7 +174,9 @@ void database::initialize_evaluators()
     
     register_evaluator<game_create_evaluator>();
     register_evaluator<game_update_evaluator>();
+    
     register_evaluator<game_play_evaluator>();
+    register_evaluator<game_buy_chips_evaluator>();
 }
 
 void database::initialize_indexes()
