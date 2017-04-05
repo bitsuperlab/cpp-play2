@@ -1377,6 +1377,41 @@ public:
         
         return sign_transaction( tx, broadcast );
     }
+    
+    
+    signed_transaction sell_game_chips(  string seller_account,
+                                      string game_chip_symbol,
+                                      string amount_to_sell,
+                                      bool broadcast)
+    {
+        FC_ASSERT( !self.is_locked() );
+        
+        game_sell_chips_operation sell_chip_op;
+        
+        account_object seller   = get_account( seller_account );
+        
+        asset_object game_chip_asset = get_asset(game_chip_symbol);
+        auto game_chip_dyn_data = get_object<asset_dynamic_data_object>(game_chip_asset.dynamic_asset_data_id);
+        FC_ASSERT( (game_chip_dyn_data.current_collateral > 0), "Can only sell a game-issued asset." );
+        
+        const price& p = asset(game_chip_dyn_data.current_collateral, asset_id_type()) / asset(game_chip_dyn_data.current_supply, game_chip_asset.id);
+        asset core_receive = get_asset(game_chip_symbol).amount_from_string(amount_to_sell) * p ;
+        
+        sell_chip_op.amount_to_sell = get_asset(game_chip_symbol).amount_from_string(amount_to_sell);
+        sell_chip_op.amount_to_receive  = core_receive;
+        sell_chip_op.seller = seller.id;
+        
+        signed_transaction tx;
+        tx.operations.push_back(sell_chip_op);
+        set_operation_fees( tx, _remote_db->get_global_properties().parameters.current_fees);
+        
+        auto dyn_props = get_dynamic_global_properties();
+        tx.set_expiration( dyn_props.time + fc::seconds(30) );
+        
+        tx.validate();
+        
+        return sign_transaction( tx, broadcast );
+    }
 
 
    signed_transaction create_asset(string issuer,
@@ -3894,6 +3929,17 @@ signed_transaction wallet_api::buy_game_chips(  string buyer_account,
     
 }
 
+    
+    signed_transaction wallet_api::sell_game_chips(  string seller_account,
+                                                  string game_chip_symbol,
+                                                  string amount_to_sell,
+                                                  bool broadcast)
+    {
+        
+        return my->sell_game_chips( seller_account, game_chip_symbol, amount_to_sell, broadcast);
+        
+    }
+    
 signed_transaction wallet_api::borrow_asset(string seller_name, string amount_to_sell,
                                                 string asset_symbol, string amount_of_collateral, bool broadcast)
 {

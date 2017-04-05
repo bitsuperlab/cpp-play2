@@ -221,6 +221,11 @@ struct get_impacted_account_visitor
     {
         _impacted.insert( op.buyer );
     }
+    
+    void operator()( const game_sell_chips_operation& op )
+    {
+        _impacted.insert( op.seller );
+    }
 
 };
 

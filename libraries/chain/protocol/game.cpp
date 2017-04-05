@@ -211,7 +211,19 @@ void game_play_operation::validate() const
         return k.fee;
     }
     
-
+    void game_sell_chips_operation::validate()const
+    {
+        FC_ASSERT( amount_to_sell.asset_id != amount_to_receive.asset_id );
+        FC_ASSERT( fee.amount >= 0 );
+        FC_ASSERT( amount_to_sell.amount > 0 );
+        FC_ASSERT( amount_to_receive.amount > 0 );
+    }
+    
+    
+    share_type game_sell_chips_operation::calculate_fee(const fee_parameters_type& k) const
+    {
+        return k.fee;
+    }
     
 
 

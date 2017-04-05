@@ -69,5 +69,17 @@ public:
         
         const asset_dynamic_data_object* _asset_dyn_data = nullptr;
     };
+    
+    
+    class game_sell_chips_evaluator : public evaluator<game_sell_chips_evaluator>
+    {
+    public:
+        typedef game_sell_chips_operation operation_type;
+        
+        void_result do_evaluate( const game_sell_chips_operation& o);
+        void_result do_apply( const game_sell_chips_operation& o);
+        
+        const asset_dynamic_data_object* _asset_dyn_data = nullptr;
+    };
 
 } } // graphene::chain

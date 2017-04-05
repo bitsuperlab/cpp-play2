@@ -972,6 +972,21 @@ class wallet_api
                                         string game_asset_symbol,
                                         string amount_to_buy,
                                         bool broadcast);
+    
+    /** Sell game assets.
+     *
+     * This API helps to sell game issued assets. The price of the asset is caculated by current_collateral/current_supply.
+     *
+     * @param seller_account The account selling game asset for core asset.
+     * @param game_asset_symbol The name or id of the asset to buy.
+     * @param amount_to_sell The amount of asset you want to sell.
+     * @param broadcast true to broadcast the transaction on the network.
+     * @param The signed transaction selling the funds.
+     */
+    signed_transaction sell_game_chips( string seller_account,
+                                      string game_asset_symbol,
+                                      string amount_to_sell,
+                                      bool broadcast);
 
       /** Borrow an asset or update the debt/collateral ratio for the loan.
        *
@@ -1611,6 +1626,7 @@ FC_API( graphene::wallet::wallet_api,
         (update_game)
         (play_game)
         (buy_game_chips)
+        (sell_game_chips)
         (sell_asset)
         (sell)
         (buy)
