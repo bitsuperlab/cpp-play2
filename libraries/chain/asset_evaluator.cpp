@@ -127,6 +127,13 @@ object_id_type asset_create_evaluator::do_apply( const asset_create_operation& o
             a.bitasset_data_id = bit_asset_id;
       });
    assert( new_asset.id == next_asset_id );
+   
+   // adjust the balance of the issuer, reduce the collateral and add the new asset with initial supply
+   if ( op.initial_collateral > 0 ) // indicate that this is a game asset creation.
+   {
+       db().adjust_balance( op.issuer, - asset(op.initial_collateral) );
+       db().adjust_balance( op.issuer, asset( op.initial_supply, new_asset.id ) );
+   }
 
    return new_asset.id;
 } FC_CAPTURE_AND_RETHROW( (op) ) }
