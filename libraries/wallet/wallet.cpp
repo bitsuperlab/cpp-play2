@@ -1972,6 +1972,46 @@ public:
 
          return ss.str();
       };
+       
+       
+       
+//       struct account_snapshot_detail {
+//           string name;
+//           account_object obj;
+//           vector<asset> assets;
+//       };
+       
+//       m["list_account_details"] = [this](variant result, const fc::variants& a)
+//       {
+//           auto r = result.as<vector<account_snapshot_detail>>();
+//           std::stringstream ss;
+//           
+//           ss << r;
+//           
+////           for( account_snapshot_detail& d : r )
+////           {
+////               
+//////               string& n = d.name;
+////               ss << d.name << "\n";
+////               
+////               
+////               ss << fc::json::to_pretty_string(d.obj) << "\n";
+////               
+////               auto r = d.assets;
+////               vector<asset_object> asset_recs;
+////               std::transform(r.begin(), r.end(), std::back_inserter(asset_recs), [this](const asset& a) {
+////                   return get_asset(a.asset_id);
+////               });
+////               
+////               for( unsigned i = 0; i < asset_recs.size(); ++i )
+////                   ss << asset_recs[i].amount_to_pretty_string(r[i]) << "\n";
+////               
+////               
+////               ss << " \n";
+////           }
+//           
+//           return ss.str();
+//       };
 
       m["list_account_balances"] = [this](variant result, const fc::variants& a)
       {
@@ -2644,6 +2684,85 @@ vector<asset> wallet_api::list_account_balances(const string& id)
    if( auto real_id = detail::maybe_id<account_id_type>(id) )
       return my->_remote_db->get_account_balances(*real_id, flat_set<asset_id_type>());
    return my->_remote_db->get_account_balances(get_account(id).id, flat_set<asset_id_type>());
+}
+    
+    
+vector<optional<account_object>> wallet_api::list_all_accounts()
+{
+    return my->_remote_db->get_all_accounts();
+}
+    
+vector<optional<balance_object>> wallet_api::list_all_balance_objects()
+{
+    return my->_remote_db->get_all_balance_objects();
+}
+
+    
+void wallet_api::graphene_snapshot()
+{
+    
+    snapshot_state state;
+    
+    auto dynamic_props = get_dynamic_global_properties();
+    
+    state.head_block.head_block_number = dynamic_props.head_block_number;
+    state.head_block.head_block_id = dynamic_props.head_block_id;
+    state.head_block.block_header = *(my->_remote_db->get_block_header(dynamic_props.head_block_number));
+    
+    vector<account_snapshot_detail> accountDetails;
+    
+    map<string, string> nameToAsset;
+    
+    const auto accounts = list_all_accounts();
+    
+    const asset_object& core_asset_obj = my->get_asset(asset_id_type());
+    
+    
+    for( const auto& account : accounts )
+    {
+        account_snapshot_detail d;
+        d.name = account->name;
+        d.obj = *account;
+        
+        d.assets = list_account_balances(d.name);
+        
+        if(d.assets.size()) {
+            state.summary.num_asset_owners += 1;
+            
+            FC_ASSERT(d.assets.size() == 1); // should be only PLS assets
+            
+            auto asset = d.assets[0];
+            
+            if( asset.amount > 0 ){
+                state.summary.owners_asset_amount += asset.amount ;
+                
+                nameToAsset[d.name] = core_asset_obj.amount_to_pretty_string(asset);
+            }
+
+        }
+
+        accountDetails.push_back(d);
+    }
+    
+    const auto balanceObjs = list_all_balance_objects();
+    for ( const auto& balObj: balanceObjs ) {
+        
+        FC_ASSERT(balObj->balance.asset_id == asset_id_type());
+        state.summary.unclaimed_asset_amount += balObj->balance.amount;
+    }
+    
+    
+    state.unclaimedBalances = list_all_balance_objects();
+    
+    state.summary.num_total_account = accountDetails.size();
+    state.summary.num_unclaimed_balance_records = balanceObjs.size();
+    state.summary.core_asset_data = my->get_object<asset_dynamic_data_object>(core_asset_obj.dynamic_asset_data_id);//  get_object(core_asset_obj.dynamic_asset_data_id).as<asset_dynamic_data_object>();
+    
+    state.accountDetails = accountDetails;
+    state.accountToAsset = nameToAsset;
+
+    fc::json::save_to_file( state, fc::path("play.snapshot.json") );
+    
 }
 
 vector<asset_object> wallet_api::list_assets(const string& lowerbound, uint32_t limit)const

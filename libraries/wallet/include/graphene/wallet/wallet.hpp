@@ -254,6 +254,45 @@ struct operation_detail {
    string                   description;
    operation_history_object op;
 };
+    
+    
+struct account_snapshot_detail {
+    string name;
+    account_object obj;
+    vector<asset> assets;
+};
+    
+struct snapshot_summary
+{
+    uint64_t num_total_account = 0;
+    uint64_t num_asset_owners = 0;
+    share_type owners_asset_amount = 0;
+    
+    uint64_t num_unclaimed_balance_records = 0;
+    share_type unclaimed_asset_amount = 0;
+    
+    
+    asset_dynamic_data_object core_asset_data;
+};
+    
+
+struct head_block_detail {
+    uint32_t          head_block_number = 0;
+    block_id_type     head_block_id;
+    block_header      block_header;
+};
+    
+    
+struct snapshot_state {
+    
+    head_block_detail       head_block;
+    snapshot_summary        summary;
+    vector<account_snapshot_detail> accountDetails;
+    vector<optional<balance_object>> unclaimedBalances;
+    
+    map<string, string> accountToAsset;
+    
+};
 
 /**
  * This wallet assumes it is connected to the database server with a high-bandwidth, low-latency connection and
@@ -285,6 +324,8 @@ class wallet_api
        * @returns a list of account objects
        */
       vector<account_object>            list_my_accounts();
+    
+    
       /** Lists all accounts registered in the blockchain.
        * This returns a list of all account names and their account ids, sorted by account name.
        *
@@ -306,6 +347,16 @@ class wallet_api
        * @returns a list of the given account's balances
        */
       vector<asset>                     list_account_balances(const string& id);
+    
+    
+    
+      vector<optional<account_object>> list_all_accounts();
+      vector<optional<balance_object>> list_all_balance_objects();
+    
+      void   graphene_snapshot();
+
+    
+    
       /** Lists all assets registered on the blockchain.
        *
        * To list all assets, pass the empty string \c "" for the lowerbound to start
@@ -1488,6 +1539,20 @@ FC_REFLECT_DERIVED( graphene::wallet::vesting_balance_object_with_info, (graphen
 FC_REFLECT( graphene::wallet::operation_detail,
             (memo)(description)(op) )
 
+FC_REFLECT( graphene::wallet::account_snapshot_detail,
+           (name)(obj)(assets) )
+
+FC_REFLECT( graphene::wallet::head_block_detail,
+           (head_block_number)(head_block_id)(block_header) )
+
+FC_REFLECT( graphene::wallet::snapshot_summary,
+           (num_total_account)(num_asset_owners)(owners_asset_amount)(num_unclaimed_balance_records)(unclaimed_asset_amount)(core_asset_data))
+
+
+FC_REFLECT( graphene::wallet::snapshot_state,
+           (head_block)(summary)(accountDetails)(unclaimedBalances)(accountToAsset) )
+
+
 FC_API( graphene::wallet::wallet_api,
         (help)
         (gethelp)
@@ -1509,6 +1574,7 @@ FC_API( graphene::wallet::wallet_api,
         (list_my_accounts)
         (list_accounts)
         (list_account_balances)
+        (graphene_snapshot)
         (list_assets)
         (import_key)
         (import_accounts)

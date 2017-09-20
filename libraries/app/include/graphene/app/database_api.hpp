@@ -223,6 +223,9 @@ class database_api
        * This function has semantics identical to @ref get_objects
        */
       vector<optional<account_object>> get_accounts(const vector<account_id_type>& account_ids)const;
+    
+      vector<optional<account_object>> get_all_accounts()const;
+      vector<optional<balance_object>> get_all_balance_objects() const;
 
       /**
        * @brief Fetch all objects relevant to the specified accounts and subscribe to updates
@@ -586,6 +589,7 @@ FC_API(graphene::app::database_api,
    // Accounts
    (get_accounts)
    (get_full_accounts)
+   (get_all_accounts)
    (get_account_by_name)
    (get_account_references)
    (lookup_account_names)
@@ -598,6 +602,7 @@ FC_API(graphene::app::database_api,
    (get_balance_objects)
    (get_vested_balances)
    (get_vesting_balances)
+   (get_all_balance_objects)
 
    // Assets
    (get_assets)
