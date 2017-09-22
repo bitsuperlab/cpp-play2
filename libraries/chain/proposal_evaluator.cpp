@@ -26,6 +26,7 @@
 #include <graphene/chain/account_object.hpp>
 #include <graphene/chain/protocol/fee_schedule.hpp>
 #include <graphene/chain/exceptions.hpp>
+#include <graphene/chain/hardfork.hpp>
 
 #include <fc/smart_ref_impl.hpp>
 
@@ -37,6 +38,8 @@ void_result proposal_create_evaluator::do_evaluate(const proposal_create_operati
    // FC_ASSERT( false, "Proposal create operation is not supported for now.");
 
    const database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
+    
    const auto& global_parameters = d.get_global_properties().parameters;
 
    FC_ASSERT( o.expiration_time > d.head_block_time(), "Proposal has already expired on creation." );
@@ -113,6 +116,7 @@ object_id_type proposal_create_evaluator::do_apply(const proposal_create_operati
 void_result proposal_update_evaluator::do_evaluate(const proposal_update_operation& o)
 { try {
    database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    _proposal = &o.proposal(d);
 
@@ -192,6 +196,7 @@ void_result proposal_update_evaluator::do_apply(const proposal_update_operation&
 void_result proposal_delete_evaluator::do_evaluate(const proposal_delete_operation& o)
 { try {
    database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    _proposal = &o.proposal(d);
 

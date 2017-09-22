@@ -123,6 +123,7 @@ public:
    std::string operator()(const account_create_operation& op)const;
    std::string operator()(const account_update_operation& op)const;
    std::string operator()(const asset_create_operation& op)const;
+   std::string operator()(const account_balance_migrate_operation& op)const;
 };
 
 template<class T>
@@ -997,6 +998,25 @@ public:
 
       return sign_transaction( tx, broadcast );
    } FC_CAPTURE_AND_RETHROW( (name) ) }
+   
+   signed_transaction migrate_account_balance(string account_name, string eth_address, bool broadcast)
+   { try {
+      FC_ASSERT( !self.is_locked() );
+      account_object account_obj = get_account(account_name);
+      
+      signed_transaction tx;
+      account_balance_migrate_operation op;
+      op.account = account_obj.get_id();
+      
+      // TODO: validate eth address
+      // TODO: validate that the account has balance.
+      op.eth_address = eth_address;
+      tx.operations = {op};
+      set_operation_fees( tx, _remote_db->get_global_properties().parameters.current_fees );
+      tx.validate();
+      
+      return sign_transaction( tx, broadcast );
+   } FC_CAPTURE_AND_RETHROW( (account_name)(eth_address) ) }
 
 
    // This function generates derived keys starting with index 0 and keeps incrementing
@@ -2572,6 +2592,12 @@ std::string operation_printer::operator()(const account_update_operation& op) co
    out << "Update Account '" << wallet.get_account(op.account).name << "'";
    return fee(op.fee);
 }
+   
+std::string operation_printer::operator()(const account_balance_migrate_operation& op) const
+{
+   out << "Migrate Account and Balance'" << wallet.get_account(op.account).name << "'";
+   return fee(op.fee);
+}
 
 std::string operation_printer::operator()(const asset_create_operation& op) const
 {
@@ -3553,6 +3579,11 @@ map<public_key_type, string> wallet_api::dump_private_keys()
 signed_transaction wallet_api::upgrade_account( string name, bool broadcast )
 {
    return my->upgrade_account(name,broadcast);
+}
+   
+signed_transaction wallet_api::migrate_account_balance( string name, string eth_address, bool broadcast )
+{
+   return my->migrate_account_balance(name, eth_address, broadcast);
 }
 
 signed_transaction wallet_api::sell_asset(string seller_account,

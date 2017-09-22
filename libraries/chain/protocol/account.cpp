@@ -270,6 +270,16 @@ void account_transfer_operation::validate()const
 {
    FC_ASSERT( fee.amount >= 0 );
 }
+   
+share_type account_balance_migrate_operation::calculate_fee( const fee_parameters_type& k )const
+{
+   return k.fee;
+}
+   
+void account_balance_migrate_operation::validate()const
+{
+   FC_ASSERT( fee.amount >= 0 );
+}
 
 
 } } // graphene::chain

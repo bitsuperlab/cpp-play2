@@ -43,6 +43,7 @@ void_result limit_order_create_evaluator::do_evaluate(const limit_order_create_o
    FC_ASSERT( false, "Limit order create operation is not supported for now.");
 
    const database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    FC_ASSERT( op.expiration >= d.head_block_time() );
 
@@ -99,6 +100,7 @@ object_id_type limit_order_create_evaluator::do_apply(const limit_order_create_o
 void_result limit_order_cancel_evaluator::do_evaluate(const limit_order_cancel_operation& o)
 { try {
    database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    _order = &o.order(d);
    FC_ASSERT( _order->seller == o.fee_paying_account );
@@ -127,6 +129,7 @@ asset limit_order_cancel_evaluator::do_apply(const limit_order_cancel_operation&
 void_result call_order_update_evaluator::do_evaluate(const call_order_update_operation& o)
 { try {
    database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    _paying_account = &o.funding_account(d);
    _debt_asset     = &o.delta_debt.asset_id(d);

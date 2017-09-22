@@ -34,6 +34,7 @@ namespace graphene { namespace chain {
 void_result transfer_to_blind_evaluator::do_evaluate( const transfer_to_blind_operation& o )
 { try {
    const auto& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    const auto& atype = o.amount.asset_id(db());
    FC_ASSERT( atype.allow_confidential() );
@@ -77,6 +78,8 @@ void transfer_to_blind_evaluator::pay_fee()
 void_result transfer_from_blind_evaluator::do_evaluate( const transfer_from_blind_operation& o )
 { try {
    const auto& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
+    
    o.fee.asset_id(d);  // verify fee is a legit asset
    const auto& bbi = d.get_index_type<blinded_balance_index>();
    const auto& cidx = bbi.indices().get<by_commitment>();
@@ -118,6 +121,8 @@ void transfer_from_blind_evaluator::pay_fee()
 void_result blind_transfer_evaluator::do_evaluate( const blind_transfer_operation& o )
 { try {
    const auto& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
+    
    o.fee.asset_id(db());  // verify fee is a legit asset
    const auto& bbi = db().get_index_type<blinded_balance_index>();
    const auto& cidx = bbi.indices().get<by_commitment>();

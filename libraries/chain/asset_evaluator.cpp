@@ -40,7 +40,8 @@ void_result asset_create_evaluator::do_evaluate( const asset_create_operation& o
    FC_ASSERT( false, "Asset create operation is not supported for now.");
 
    database& d = db();
-
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
+    
    const auto& chain_parameters = d.get_global_properties().parameters;
    FC_ASSERT( op.common_options.whitelist_authorities.size() <= chain_parameters.maximum_asset_whitelist_authorities );
    FC_ASSERT( op.common_options.blacklist_authorities.size() <= chain_parameters.maximum_asset_whitelist_authorities );
@@ -136,6 +137,7 @@ void_result asset_issue_evaluator::do_evaluate( const asset_issue_operation& o )
    FC_ASSERT( false, "Asset issue operation is not supported for now.");
 
    const database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    const asset_object& a = o.asset_to_issue.asset_id(d);
    FC_ASSERT( o.issuer == a.issuer );
@@ -221,6 +223,7 @@ void_result asset_fund_fee_pool_evaluator::do_apply(const asset_fund_fee_pool_op
 void_result asset_update_evaluator::do_evaluate(const asset_update_operation& o)
 { try {
    database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    const asset_object& a = o.asset_to_update(d);
    auto a_copy = a;
@@ -273,6 +276,7 @@ void_result asset_update_evaluator::do_evaluate(const asset_update_operation& o)
 void_result asset_update_evaluator::do_apply(const asset_update_operation& o)
 { try {
    database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    // If we are now disabling force settlements, cancel all open force settlement orders
    if( o.new_options.flags & disable_force_settle && asset_to_update->can_force_settle() )
@@ -298,6 +302,7 @@ void_result asset_update_evaluator::do_apply(const asset_update_operation& o)
 void_result asset_update_bitasset_evaluator::do_evaluate(const asset_update_bitasset_operation& o)
 { try {
    database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    const asset_object& a = o.asset_to_update(d);
 
@@ -350,6 +355,7 @@ void_result asset_update_bitasset_evaluator::do_apply(const asset_update_bitasse
 void_result asset_update_feed_producers_evaluator::do_evaluate(const asset_update_feed_producers_evaluator::operation_type& o)
 { try {
    database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    FC_ASSERT( o.new_feed_producers.size() <= d.get_global_properties().parameters.maximum_asset_feed_publishers );
    for( auto id : o.new_feed_producers )
@@ -395,6 +401,8 @@ void_result asset_update_feed_producers_evaluator::do_apply(const asset_update_f
 void_result asset_global_settle_evaluator::do_evaluate(const asset_global_settle_evaluator::operation_type& op)
 { try {
    const database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
+    
    asset_to_settle = &op.asset_to_settle(d);
    FC_ASSERT(asset_to_settle->is_market_issued());
    FC_ASSERT(asset_to_settle->can_global_settle());
@@ -422,6 +430,8 @@ void_result asset_global_settle_evaluator::do_apply(const asset_global_settle_ev
 void_result asset_settle_evaluator::do_evaluate(const asset_settle_evaluator::operation_type& op)
 { try {
    const database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
+    
    asset_to_settle = &op.amount.asset_id(d);
    FC_ASSERT(asset_to_settle->is_market_issued());
    const auto& bitasset = asset_to_settle->bitasset_data(d);
@@ -473,6 +483,7 @@ operation_result asset_settle_evaluator::do_apply(const asset_settle_evaluator::
 void_result asset_publish_feeds_evaluator::do_evaluate(const asset_publish_feed_operation& o)
 { try {
    database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    const asset_object& base = o.asset_id(d);
    //Verify that this feed is for a market-issued asset and that asset is backed by the base
@@ -508,6 +519,7 @@ void_result asset_publish_feeds_evaluator::do_apply(const asset_publish_feed_ope
 { try {
 
    database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    const asset_object& base = o.asset_id(d);
    const asset_bitasset_data_object& bad = base.bitasset_data(d);
@@ -529,6 +541,7 @@ void_result asset_publish_feeds_evaluator::do_apply(const asset_publish_feed_ope
 
 void_result asset_claim_fees_evaluator::do_evaluate( const asset_claim_fees_operation& o )
 { try {
+   FC_ASSERT( db().head_block_time() < HARDFORK_1_TIME );
    FC_ASSERT( o.amount_to_claim.asset_id(db()).issuer == o.issuer, "Asset fees may only be claimed by the issuer" );
    return void_result();
 } FC_CAPTURE_AND_RETHROW( (o) ) }

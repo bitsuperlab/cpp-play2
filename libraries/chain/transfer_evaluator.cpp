@@ -32,6 +32,7 @@ void_result transfer_evaluator::do_evaluate( const transfer_operation& op )
 { try {
 
    const database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    const account_object& from_account    = op.from(d);
    const account_object& to_account      = op.to(d);
@@ -86,6 +87,7 @@ void_result transfer_evaluator::do_apply( const transfer_operation& o )
 void_result override_transfer_evaluator::do_evaluate( const override_transfer_operation& op )
 { try {
    const database& d = db();
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    const asset_object&   asset_type      = op.amount.asset_id(d);
    GRAPHENE_ASSERT(

@@ -656,6 +656,15 @@ class wallet_api
        * @returns the signed transaction upgrading the account
        */
       signed_transaction upgrade_account(string name, bool broadcast);
+   
+      /**
+       *  Migrate account balance to ethereum. The current system will be deprecated.
+       *  @param name the name or id of the account to migrate
+       *  @param eth_address the eth_address where the balance will be allocated to.
+       *  @param broadcast true to broadcast the transaction on the network
+       *  @returns the signed transaction migrating the account
+       */
+      signed_transaction migrate_account_balance(string name, string eth_address, bool broadcast);
 
       /** Creates a new account and registers it on the blockchain.
        *
@@ -1517,6 +1526,7 @@ FC_API( graphene::wallet::wallet_api,
         (suggest_brain_key)
         (register_account)
         (upgrade_account)
+        (migrate_account_balance)
         (create_account_with_brain_key)
         (sell_asset)
         (sell)

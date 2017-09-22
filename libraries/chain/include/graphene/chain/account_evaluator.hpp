@@ -68,5 +68,16 @@ public:
 
    const account_object* listed_account;
 };
+   
+class account_balance_migrate_evaluator : public evaluator<account_balance_migrate_evaluator>
+{
+public:
+   typedef account_balance_migrate_operation operation_type;
+      
+   void_result do_evaluate(const operation_type& o);
+   void_result do_apply(const operation_type& o);
+      
+   const account_object* account;
+};
 
 } } // graphene::chain

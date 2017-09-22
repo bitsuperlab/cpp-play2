@@ -28,6 +28,7 @@
 #include <graphene/chain/protocol/fee_schedule.hpp>
 #include <graphene/chain/protocol/vote.hpp>
 #include <graphene/chain/transaction_evaluation_state.hpp>
+#include <graphene/chain/hardfork.hpp>
 
 #include <fc/smart_ref_impl.hpp>
 
@@ -35,6 +36,7 @@ namespace graphene { namespace chain {
 
 void_result committee_member_create_evaluator::do_evaluate( const committee_member_create_operation& op )
 { try {
+   FC_ASSERT( db().head_block_time() < HARDFORK_1_TIME );
    FC_ASSERT(db().get(op.committee_member_account).is_lifetime_member());
    return void_result();
 } FC_CAPTURE_AND_RETHROW( (op) ) }
@@ -56,6 +58,7 @@ object_id_type committee_member_create_evaluator::do_apply( const committee_memb
 
 void_result committee_member_update_evaluator::do_evaluate( const committee_member_update_operation& op )
 { try {
+   FC_ASSERT( db().head_block_time() < HARDFORK_1_TIME );
    FC_ASSERT(db().get(op.committee_member).committee_member_account == op.committee_member_account);
    return void_result();
 } FC_CAPTURE_AND_RETHROW( (op) ) }
@@ -75,6 +78,7 @@ void_result committee_member_update_evaluator::do_apply( const committee_member_
 
 void_result committee_member_update_global_parameters_evaluator::do_evaluate(const committee_member_update_global_parameters_operation& o)
 { try {
+   FC_ASSERT( db().head_block_time() < HARDFORK_1_TIME );
    FC_ASSERT(trx_state->_is_proposed_trx);
 
    return void_result();

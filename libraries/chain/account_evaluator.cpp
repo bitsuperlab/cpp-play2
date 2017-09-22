@@ -253,6 +253,8 @@ void_result account_update_evaluator::do_apply( const account_update_operation& 
 void_result account_whitelist_evaluator::do_evaluate(const account_whitelist_operation& o)
 { try {
    database& d = db();
+    
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    listed_account = &o.account_to_list(d);
    if( !d.get_global_properties().parameters.allow_non_member_whitelists )
@@ -296,6 +298,8 @@ void_result account_whitelist_evaluator::do_apply(const account_whitelist_operat
 void_result account_upgrade_evaluator::do_evaluate(const account_upgrade_evaluator::operation_type& o)
 { try {
    database& d = db();
+    
+   FC_ASSERT( d.head_block_time() < HARDFORK_1_TIME );
 
    account = &d.get(o.account_to_upgrade);
    FC_ASSERT(!account->is_lifetime_member());
@@ -319,5 +323,32 @@ void_result account_upgrade_evaluator::do_apply(const account_upgrade_evaluator:
 
    return {};
 } FC_RETHROW_EXCEPTIONS( error, "Unable to upgrade account '${a}'", ("a",o.account_to_upgrade(db()).name) ) }
+   
+void_result account_balance_migrate_evaluator::do_evaluate(const account_balance_migrate_evaluator::operation_type& o)
+{ try {
+   database& d = db();
+      
+   account = &d.get(o.account);
+   
+   // validate that the account has balance.
+   
+   // validate that the account's signature/authority
+   
+   // validate the ethereum address is valid.
+      
+   return {};
+   //} FC_CAPTURE_AND_RETHROW( (o) ) }
+} FC_RETHROW_EXCEPTIONS( error, "Unable to migrate balance account '${a}'", ("a",o.account(db()).name) ) }
+   
+void_result account_balance_migrate_evaluator::do_apply(const account_balance_migrate_evaluator::operation_type& o)
+{ try {
+   database& d = db();
+      
+   // to add a new migrate record;
+   
+   // to delete the account_balance and account?
+      
+   return {};
+} FC_RETHROW_EXCEPTIONS( error, "Unable to migrate balance account '${a}'", ("a",o.account(db()).name) ) }
 
 } } // graphene::chain

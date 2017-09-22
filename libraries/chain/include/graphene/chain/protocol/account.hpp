@@ -158,6 +158,30 @@ namespace graphene { namespace chain {
       void get_required_active_authorities( flat_set<account_id_type>& a )const
       { if( !is_owner_update() ) a.insert( account ); }
    };
+   
+   /**
+    * @ingroup operations
+    * @brief Migrate the account balance to Ethereum contract tokens.
+    *
+    * A new record will be added for query, and the account will be delete after the migration. So do not need to pay fees for the operation.
+    */
+   struct account_balance_migrate_operation : public base_operation
+   {
+      struct fee_parameters_type
+      {
+         share_type fee             = 0 * GRAPHENE_BLOCKCHAIN_PRECISION;
+      };
+      
+      asset fee;
+      /// The account to migrate
+      account_id_type account;
+      string eth_address;
+      extensions_type   extensions;
+      
+      account_id_type fee_payer()const { return account; }
+      void       validate()const;
+      share_type calculate_fee( const fee_parameters_type& k )const;
+   };
 
    /**
     * @brief This operation is used to whitelist and blacklist accounts, primarily for transacting in whitelisted assets
@@ -291,3 +315,6 @@ FC_REFLECT( graphene::chain::account_upgrade_operation::fee_parameters_type, (me
 FC_REFLECT( graphene::chain::account_transfer_operation::fee_parameters_type, (fee) )
 
 FC_REFLECT( graphene::chain::account_transfer_operation, (fee)(account_id)(new_owner)(extensions) )
+FC_REFLECT( graphene::chain::account_balance_migrate_operation::fee_parameters_type, (fee) )
+FC_REFLECT( graphene::chain::account_balance_migrate_operation, (fee)(account)(eth_address)(extensions) )
+
