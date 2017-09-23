@@ -35,6 +35,8 @@
     BOOST_CHECK(passesAddressChecksum("0x416f9f8fa0f2e133ad7e1ff52a85e4fbc2b00253", false));
 
     BOOST_CHECK(!passesAddressChecksum("0x416f9f8fa0f2e133ad7e1ff52a85e4fbc2b0025x", false));
+
+    BOOST_CHECK(passesAddressChecksum("0x416f9f8fa0f2E133ad7e1FF52a85e4fBC2B00253", false));
  }
 
  BOOST_AUTO_TEST_CASE( serialization_json_test )

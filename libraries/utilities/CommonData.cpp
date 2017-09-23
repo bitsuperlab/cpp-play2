@@ -75,9 +75,6 @@ bool graphene::utilities::passesAddressChecksum(string const& _str, bool _strict
         } else if (s.find_first_of("ABCDEF") == string::npos && s.find_first_not_of("0123456789abcdef") == string::npos)
         {
             return true;
-        } else
-        {
-            return false;
         }
     }
 

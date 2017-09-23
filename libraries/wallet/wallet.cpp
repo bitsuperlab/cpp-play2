@@ -66,6 +66,7 @@
 #include <graphene/utilities/git_revision.hpp>
 #include <graphene/utilities/key_conversion.hpp>
 #include <graphene/utilities/words.hpp>
+#include <graphene/utilities/CommonData.h>
 #include <graphene/wallet/wallet.hpp>
 #include <graphene/wallet/api_documentation.hpp>
 #include <graphene/wallet/reflect_util.hpp>
@@ -1008,8 +1009,15 @@ public:
       account_balance_migrate_operation op;
       op.account = account_obj.get_id();
       
-      // TODO: validate eth address
-      // TODO: validate that the account has balance.
+      // validate eth address
+      FC_ASSERT(graphene::utilities::passesAddressChecksum(eth_address, false));
+      
+      // validate that the account has balance.
+      flat_set<asset_id_type> assets;
+      assets.insert(asset_id_type());
+      auto account_balances = _remote_db->get_account_balances(account_obj.id, assets);
+      FC_ASSERT(account_balances.size() > 0 && account_balances[0].amount > 0);
+      
       op.eth_address = eth_address;
       tx.operations = {op};
       set_operation_fees( tx, _remote_db->get_global_properties().parameters.current_fees );
