@@ -14,6 +14,8 @@ set(sources
    string_escape.cpp
    tempdir.cpp
    words.cpp
+   SHA3.cpp
+   CommonData.cpp
    ${headers})
 
 configure_file("${CMAKE_CURRENT_SOURCE_DIR}/git_revision.cpp.in" "${CMAKE_CURRENT_BINARY_DIR}/git_revision.cpp" @ONLY)
