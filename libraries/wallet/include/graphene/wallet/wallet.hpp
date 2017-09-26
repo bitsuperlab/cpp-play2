@@ -306,6 +306,18 @@ class wallet_api
        * @returns a list of the given account's balances
        */
       vector<asset>                     list_account_balances(const string& id);
+   
+      /** Lists all account balance migrates done in the blockchain.
+       * This returns a list of all migrates records and there details info, sorted by migrate id.
+       *
+       * Use the \c lowerbound and limit parameters to page through the list.  To retrieve all migrates,
+       *
+       * @param lower_bound_id the id of the first migrate to return. 
+       * @param limit the maximum number of accounts to return (max: 1000)
+       * @returns a list of accounts mapping account names to account ids
+       */
+      vector<account_balance_migrate_object> list_migrate_records(account_balance_migrate_id_type lower_bound_id, uint32_t limit)const;
+   
       /** Lists all assets registered on the blockchain.
        *
        * To list all assets, pass the empty string \c "" for the lowerbound to start
@@ -1518,6 +1530,7 @@ FC_API( graphene::wallet::wallet_api,
         (list_my_accounts)
         (list_accounts)
         (list_account_balances)
+        (list_migrate_records)
         (list_assets)
         (import_key)
         (import_accounts)

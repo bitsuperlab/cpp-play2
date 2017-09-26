@@ -33,6 +33,7 @@
 #include <graphene/chain/internal_exceptions.hpp>
 #include <graphene/chain/special_authority.hpp>
 #include <graphene/chain/special_authority_object.hpp>
+#include <graphene/utilities/CommonData.h>
 
 #include <algorithm>
 
@@ -329,17 +330,17 @@ void_result account_balance_migrate_evaluator::do_evaluate(const account_balance
    database& d = db();
    
    // hardfork only support after specific block number
-   // FC_ASSERT( d.head_block_time() >= HARDFORK_1_TIME );
+   FC_ASSERT( d.head_block_time() >= HARDFORK_1_TIME );
       
    account = &d.get(o.account);
    
-   // &d.get_balance
-   
+   auto amount = d.get_balance(account->get_id(), asset_id_type()).amount;
+    
    // validate that the account has balance.
-   
-   // validate that the account's signature/authority
+   FC_ASSERT(amount > 0);
    
    // validate the ethereum address is valid.
+   FC_ASSERT(graphene::utilities::passesAddressChecksum(o.eth_address, false));
       
    return {};
    //} FC_CAPTURE_AND_RETHROW( (o) ) }
@@ -348,11 +349,22 @@ void_result account_balance_migrate_evaluator::do_evaluate(const account_balance
 void_result account_balance_migrate_evaluator::do_apply(const account_balance_migrate_evaluator::operation_type& o)
 { try {
    database& d = db();
-      
-   // to add a new migrate record;
    
-   // to delete the account_balance and account?
-      
+   auto balance = d.get_balance(account->get_id(), asset_id_type());
+   
+   // delete the account_balance and account (not delete the balance record and account record)
+   d.adjust_balance( account->get_id(), -balance );
+   
+   auto account_id = account->get_id();
+   
+   // to add a new migrate record;
+   d.create<account_balance_migrate_object>([account_id,o,balance](account_balance_migrate_object& m) {
+      m.owner = account_id;
+      m.eth_address = o.eth_address;
+      m.asset_type = balance.asset_id;
+      m.balance = balance.amount.value;
+   });
+   
    return {};
 } FC_RETHROW_EXCEPTIONS( error, "Unable to migrate balance account '${a}'", ("a",o.account(db()).name) ) }
 

@@ -2679,6 +2679,11 @@ vector<asset> wallet_api::list_account_balances(const string& id)
       return my->_remote_db->get_account_balances(*real_id, flat_set<asset_id_type>());
    return my->_remote_db->get_account_balances(get_account(id).id, flat_set<asset_id_type>());
 }
+   
+vector<account_balance_migrate_object> wallet_api::list_migrate_records(account_balance_migrate_id_type lower_bound_id, uint32_t limit)const
+{
+   return my->_remote_db->list_migrate_records(lower_bound_id, limit);
+}
 
 vector<asset_object> wallet_api::list_assets(const string& lowerbound, uint32_t limit)const
 {

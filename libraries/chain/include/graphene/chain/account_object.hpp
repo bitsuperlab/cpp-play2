@@ -108,6 +108,20 @@ namespace graphene { namespace chain {
          asset get_balance()const { return asset(balance, asset_type); }
          void  adjust_balance(const asset& delta);
    };
+   
+   class account_balance_migrate_object : public abstract_object<account_balance_migrate_object>
+   {
+   public:
+      static const uint8_t space_id = implementation_ids;
+      static const uint8_t type_id  = impl_account_balance_migrate_object_type;
+      
+      account_id_type   owner;
+      string            eth_address;
+      asset_id_type     asset_type;
+      share_type        balance;
+      
+      asset get_balance()const { return asset(balance, asset_type); }
+   };
 
 
    /**
@@ -340,6 +354,38 @@ namespace graphene { namespace chain {
     * @ingroup object_index
     */
    typedef generic_index<account_balance_object, account_balance_object_multi_index_type> account_balance_index;
+   
+   struct by_migrate_account_id;
+   struct by_migrate_eth_address;
+   struct by_migrate_account_balance;
+   
+   /**
+    * @ingroup object_index
+    */
+   typedef multi_index_container<
+      account_balance_migrate_object,
+      indexed_by<
+         ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
+         ordered_unique< tag<by_migrate_account_id>, member<account_balance_migrate_object, account_id_type, &account_balance_migrate_object::owner> >,
+         ordered_unique< tag<by_migrate_eth_address>, member<account_balance_migrate_object, string, &account_balance_migrate_object::eth_address> >,
+         ordered_unique< tag<by_migrate_account_balance>,
+            composite_key<
+               account_balance_migrate_object,
+                  member<account_balance_object, share_type, &account_balance_object::balance>,
+                  member<account_balance_object, account_id_type, &account_balance_object::owner>
+            >,
+            composite_key_compare<
+               std::greater< share_type >,
+               std::less< account_id_type >
+            >
+         >
+      >
+   > account_balance_migrate_object_multi_index_type;
+   
+   /**
+    * @ingroup object_index
+    */
+   typedef generic_index<account_balance_migrate_object, account_balance_migrate_object_multi_index_type> account_balance_migrate_index;
 
    struct by_name{};
 
@@ -376,6 +422,10 @@ FC_REFLECT_DERIVED( graphene::chain::account_object,
 FC_REFLECT_DERIVED( graphene::chain::account_balance_object,
                     (graphene::db::object),
                     (owner)(asset_type)(balance) )
+
+FC_REFLECT_DERIVED( graphene::chain::account_balance_migrate_object,
+                   (graphene::db::object),
+                   (owner)(eth_address)(asset_type)(balance) )
 
 FC_REFLECT_DERIVED( graphene::chain::account_statistics_object,
                     (graphene::chain::object),

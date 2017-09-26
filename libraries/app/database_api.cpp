@@ -84,6 +84,9 @@ class database_api_impl : public std::enable_shared_from_this<database_api_impl>
       vector<optional<account_object>> lookup_account_names(const vector<string>& account_names)const;
       map<string,account_id_type> lookup_accounts(const string& lower_bound_name, uint32_t limit)const;
       uint64_t get_account_count()const;
+   
+      // Migrates
+      vector<account_balance_migrate_object> list_migrate_records(account_balance_migrate_id_type lower_bound_id, uint32_t limit)const;
 
       // Balances
       vector<asset> get_account_balances(account_id_type id, const flat_set<asset_id_type>& assets)const;
@@ -693,6 +696,33 @@ uint64_t database_api::get_account_count()const
 uint64_t database_api_impl::get_account_count()const
 {
    return _db.get_index_type<account_index>().indices().size();
+}
+
+//////////////////////////////////////////////////////////////////////
+//                                                                  //
+// Migrates                                                         //
+//                                                                  //
+//////////////////////////////////////////////////////////////////////
+vector<account_balance_migrate_object> database_api::list_migrate_records(account_balance_migrate_id_type lower_bound_id, uint32_t limit)const
+{
+   return my->list_migrate_records(lower_bound_id, limit);
+}
+   
+vector<account_balance_migrate_object> database_api_impl::list_migrate_records(account_balance_migrate_id_type lower_bound_id, uint32_t limit)const
+{
+   FC_ASSERT( limit <= 1000 );
+   const auto& migrates_by_id = _db.get_index_type<account_balance_migrate_index>().indices().get<by_id>();
+   vector<account_balance_migrate_object> result;
+   
+   for( auto itr = migrates_by_id.lower_bound(lower_bound_id);
+       limit-- && itr != migrates_by_id.end();
+       ++itr )
+   {
+      result.push_back(*itr);
+   }
+   
+   return result;
+   
 }
 
 //////////////////////////////////////////////////////////////////////

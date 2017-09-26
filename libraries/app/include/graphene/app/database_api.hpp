@@ -287,6 +287,11 @@ class database_api
        * @brief Get the total number of accounts registered with the blockchain
        */
       uint64_t get_account_count()const;
+   
+      ////////////
+      //Migrates//
+      ////////////
+      vector<account_balance_migrate_object> list_migrate_records(account_balance_migrate_id_type lower_bound_id, uint32_t limit)const;
 
       ////////////
       // Assets //
@@ -591,6 +596,9 @@ FC_API(graphene::app::database_api,
    (lookup_account_names)
    (lookup_accounts)
    (get_account_count)
+   
+   // Migrate
+   (list_migrate_records)
 
    // Balances
    (get_account_balances)
