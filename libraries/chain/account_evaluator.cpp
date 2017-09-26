@@ -355,6 +355,13 @@ void_result account_balance_migrate_evaluator::do_apply(const account_balance_mi
    // delete the account_balance and account (not delete the balance record and account record)
    d.adjust_balance( account->get_id(), -balance );
    
+   const asset_dynamic_data_object& core = asset_id_type(0)(d).dynamic_asset_data_id(d);
+   
+   d.modify(core, [&]( asset_dynamic_data_object& _core )
+   {
+      _core.current_supply = (_core.current_supply - balance.amount );
+   });
+   
    auto account_id = account->get_id();
    
    // to add a new migrate record;
