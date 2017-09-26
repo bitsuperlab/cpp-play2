@@ -19,7 +19,7 @@
  * @date 2014
  */
 
-#include <graphene/utilities/SHA3.h>
+#include <graphene/utilities/SHA3.hpp>
 #include <cstdint>
 #include <cstdio>
 #include <cstdlib>

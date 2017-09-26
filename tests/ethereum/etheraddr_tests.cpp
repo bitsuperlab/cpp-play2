@@ -24,7 +24,7 @@
 
  #include <boost/test/unit_test.hpp>
  
- #include <graphene/utilities/CommonData.h>
+ #include <graphene/utilities/CommonData.hpp>
  
  using namespace graphene::utilities;
  

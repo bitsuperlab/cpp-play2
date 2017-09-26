@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <graphene/utilities/CommonData.h>
+#include <graphene/utilities/CommonData.hpp>
 
 #include <boost/functional/hash.hpp>
 #include <boost/io/ios_state.hpp>

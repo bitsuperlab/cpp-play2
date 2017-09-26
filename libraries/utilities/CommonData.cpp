@@ -1,6 +1,6 @@
-#include <graphene/utilities/CommonData.h>
+#include <graphene/utilities/CommonData.hpp>
 #include <boost/algorithm/string.hpp>
-#include <graphene/utilities/SHA3.h>
+#include <graphene/utilities/SHA3.hpp>
 
 using namespace std;
 using namespace graphene::utilities;

@@ -24,8 +24,8 @@
 #pragma once
 
 #include <string>
-#include <graphene/utilities/FixedHash.h>
-#include <graphene/utilities/vector_ref.h>
+#include <graphene/utilities/FixedHash.hpp>
+#include <graphene/utilities/vector_ref.hpp>
 
 namespace graphene { namespace utilities {
 

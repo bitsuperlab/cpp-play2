@@ -33,7 +33,7 @@
 #include <graphene/chain/internal_exceptions.hpp>
 #include <graphene/chain/special_authority.hpp>
 #include <graphene/chain/special_authority_object.hpp>
-#include <graphene/utilities/CommonData.h>
+#include <graphene/utilities/CommonData.hpp>
 
 #include <algorithm>
 

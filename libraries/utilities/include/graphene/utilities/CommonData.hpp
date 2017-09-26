@@ -14,7 +14,7 @@
 	You should have received a copy of the GNU General Public License
 	along with solidity.  If not, see <http://www.gnu.org/licenses/>.
 */
-/** @file CommonData.h
+/** @file CommonData.hpp
  * @author Gav Wood <i@gavwood.com>
  * @date 2014
  *
@@ -23,7 +23,7 @@
 
 #pragma once
 
-#include <graphene/utilities/Common.h>
+#include <graphene/utilities/Common.hpp>
 
 #include <vector>
 #include <type_traits>

@@ -37,7 +37,7 @@
 #pragma warning(disable:3682) //call through incomplete class
 #endif
 
-#include <graphene/utilities/vector_ref.h>
+#include <graphene/utilities/vector_ref.hpp>
 
 #if defined(__GNUC__)
 #pragma warning(push)
