@@ -327,8 +327,13 @@ void_result account_upgrade_evaluator::do_apply(const account_upgrade_evaluator:
 void_result account_balance_migrate_evaluator::do_evaluate(const account_balance_migrate_evaluator::operation_type& o)
 { try {
    database& d = db();
+   
+   // hardfork only support after specific block number
+   // FC_ASSERT( d.head_block_time() >= HARDFORK_1_TIME );
       
    account = &d.get(o.account);
+   
+   // &d.get_balance
    
    // validate that the account has balance.
    
