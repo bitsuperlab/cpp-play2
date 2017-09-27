@@ -357,6 +357,7 @@ void_result account_balance_migrate_evaluator::do_apply(const account_balance_mi
    
    const asset_dynamic_data_object& core = asset_id_type(0)(d).dynamic_asset_data_id(d);
    
+   FC_ASSERT( core.current_supply >= balance.amount);
    d.modify(core, [&]( asset_dynamic_data_object& _core )
    {
       _core.current_supply = (_core.current_supply - balance.amount );
