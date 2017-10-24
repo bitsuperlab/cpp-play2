@@ -1,4 +1,4 @@
 // #1 Migrate account balance and disable other operations including transfer
 #ifndef HARDFORK_1_TIME
-#define HARDFORK_1_TIME (fc::time_point_sec( 1508668902 ))
+#define HARDFORK_1_TIME (fc::time_point_sec( 1509166800 ))
 #endif
