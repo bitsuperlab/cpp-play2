@@ -320,6 +320,11 @@ namespace graphene { namespace app {
                   assert( aobj != nullptr );
                   result.push_back( aobj->owner );
                   break;
+               } case impl_account_balance_migrate_object_type:{
+                    const auto& aobj = dynamic_cast<const account_balance_migrate_object*>(obj);
+                    assert( aobj != nullptr );
+                    result.push_back( aobj->owner );
+                    break;
                } case impl_account_statistics_object_type:{
                   const auto& aobj = dynamic_cast<const account_statistics_object*>(obj);
                   assert( aobj != nullptr );

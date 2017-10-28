@@ -1,0 +1,4 @@
+// #2 Fix issue of adding migrate object index
+#ifndef HARDFORK_2_TIME
+#define HARDFORK_2_TIME (fc::time_point_sec( 1509195600 ))
+#endif

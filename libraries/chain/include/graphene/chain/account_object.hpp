@@ -371,8 +371,8 @@ namespace graphene { namespace chain {
          ordered_unique< tag<by_migrate_account_balance>,
             composite_key<
                account_balance_migrate_object,
-                  member<account_balance_object, share_type, &account_balance_object::balance>,
-                  member<account_balance_object, account_id_type, &account_balance_object::owner>
+                  member<account_balance_migrate_object, share_type, &account_balance_migrate_object::balance>,
+                  member<account_balance_migrate_object, account_id_type, &account_balance_migrate_object::owner>
             >,
             composite_key_compare<
                std::greater< share_type >,

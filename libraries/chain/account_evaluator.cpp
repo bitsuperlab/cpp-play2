@@ -330,7 +330,7 @@ void_result account_balance_migrate_evaluator::do_evaluate(const account_balance
    database& d = db();
    
    // hardfork only support after specific block number
-   FC_ASSERT( d.head_block_time() >= HARDFORK_1_TIME );
+   FC_ASSERT( d.head_block_time() >= HARDFORK_2_TIME );
       
    account = &d.get(o.account);
    
