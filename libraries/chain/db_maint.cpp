@@ -44,6 +44,7 @@
 #include <graphene/chain/vesting_balance_object.hpp>
 #include <graphene/chain/vote_count.hpp>
 #include <graphene/chain/witness_object.hpp>
+#include <graphene/chain/hardfork.hpp>
 
 namespace graphene { namespace chain {
 
@@ -206,6 +207,10 @@ void database::initialize_budget_record( fc::time_point_sec now, budget_record& 
    const asset_dynamic_data_object& core_dd = core.dynamic_asset_data_id(*this);
 
    rec.from_initial_reserve = core.reserved(*this);
+   if (this->head_block_time() >= HARDFORK_3_TIME)
+   {
+      rec.from_initial_reserve = 0;
+   }
    rec.from_accumulated_fees = core_dd.accumulated_fees;
    rec.from_unused_witness_budget = dpo.witness_budget;
 

@@ -1,0 +1,4 @@
+// #3 Fix issue of updating max supply.
+#ifndef HARDFORK_3_TIME
+#define HARDFORK_3_TIME (fc::time_point_sec( 1509454800 ))
+#endif
