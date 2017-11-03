@@ -366,9 +366,9 @@ namespace graphene { namespace chain {
       account_balance_migrate_object,
       indexed_by<
          ordered_unique< tag<by_id>, member< object, object_id_type, &object::id > >,
-         ordered_unique< tag<by_migrate_account_id>, member<account_balance_migrate_object, account_id_type, &account_balance_migrate_object::owner> >,
-         ordered_unique< tag<by_migrate_eth_address>, member<account_balance_migrate_object, string, &account_balance_migrate_object::eth_address> >,
-         ordered_unique< tag<by_migrate_account_balance>,
+         ordered_non_unique< tag<by_migrate_account_id>, member<account_balance_migrate_object, account_id_type, &account_balance_migrate_object::owner> >,
+         ordered_non_unique< tag<by_migrate_eth_address>, member<account_balance_migrate_object, string, &account_balance_migrate_object::eth_address> >,
+         ordered_non_unique< tag<by_migrate_account_balance>,
             composite_key<
                account_balance_migrate_object,
                   member<account_balance_migrate_object, share_type, &account_balance_migrate_object::balance>,
