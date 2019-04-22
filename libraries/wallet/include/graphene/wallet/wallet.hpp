@@ -279,7 +279,7 @@ struct snapshot_summary
 struct head_block_detail {
     uint32_t          head_block_number = 0;
     block_id_type     head_block_id;
-    block_header      block_header;
+//    block_header      block_header;
 };
     
     
@@ -1564,7 +1564,7 @@ FC_REFLECT( graphene::wallet::account_snapshot_detail,
            (name)(obj)(assets) )
 
 FC_REFLECT( graphene::wallet::head_block_detail,
-           (head_block_number)(head_block_id)(block_header) )
+           (head_block_number)(head_block_id) )
 
 FC_REFLECT( graphene::wallet::snapshot_summary,
            (num_total_account)(num_asset_owners)(owners_asset_amount)(num_unclaimed_balance_records)(unclaimed_asset_amount)(core_asset_data))

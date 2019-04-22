@@ -2746,7 +2746,7 @@ void wallet_api::graphene_snapshot()
     
     state.head_block.head_block_number = dynamic_props.head_block_number;
     state.head_block.head_block_id = dynamic_props.head_block_id;
-    state.head_block.block_header = *(my->_remote_db->get_block_header(dynamic_props.head_block_number));
+//    state.head_block.block_header = *(my->_remote_db->get_block_header(dynamic_props.head_block_number));
     
     vector<account_snapshot_detail> accountDetails;
     
