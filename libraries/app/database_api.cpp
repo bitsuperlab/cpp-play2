@@ -87,6 +87,9 @@ class database_api_impl : public std::enable_shared_from_this<database_api_impl>
    
       // Migrates
       vector<account_balance_migrate_object> list_migrate_records(account_balance_migrate_id_type lower_bound_id, uint32_t limit)const;
+    
+      vector<optional<account_object>> get_all_accounts() const;
+      vector<optional<balance_object>> get_all_balance_objects() const;
 
       // Balances
       vector<asset> get_account_balances(account_id_type id, const flat_set<asset_id_type>& assets)const;
@@ -517,7 +520,30 @@ vector<optional<account_object>> database_api_impl::get_accounts(const vector<ac
    });
    return result;
 }
+    
+    
+vector<optional<account_object>> database_api::get_all_accounts()const
+{
+    return my->get_all_accounts();
+}
 
+vector<optional<account_object>> database_api_impl::get_all_accounts()const
+{
+    return vector<optional<account_object>>(_db.get_index_type<account_index>().indices().begin(), _db.get_index_type<account_index>().indices().end());
+}
+    
+
+vector<optional<balance_object>> database_api::get_all_balance_objects()const
+{
+    return my->get_all_balance_objects();
+}
+
+vector<optional<balance_object>> database_api_impl::get_all_balance_objects() const
+{
+    return vector<optional<balance_object>>(_db.get_index_type<balance_index>().indices().begin(), _db.get_index_type<balance_index>().indices().end());
+}
+
+    
 std::map<string,full_account> database_api::get_full_accounts( const vector<string>& names_or_ids, bool subscribe )
 {
    return my->get_full_accounts( names_or_ids, subscribe );
